@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Supprimer facture n°{{ facture.numero_reservation }}{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>⚠️ Confirmer la suppression</h1>
+  <p>
+    Es-tu sûr de vouloir supprimer la facture
+    <strong>n°{{ facture.numero_reservation }}</strong>
+    de <strong>{{ facture.client }}</strong> ?
+  </p>
+  <p>Cette action est irréversible.</p>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-actions">
+      <a href="{% url 'facture_detail' facture.pk %}" class="btn btn-secondary">Annuler</a>
+      <button type="submit" class="btn btn-danger">🗑️ Confirmer la suppression</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}Facture n°{{ facture.numero_reservation }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Facture n°{{ facture.numero_reservation }}</h1>
+  <div class="actions-bar">
+    <a href="{% url 'facture_liste' %}" class="btn btn-secondary">← Liste</a>
+    <a href="{% url 'facture_update' facture.pk %}" class="btn">✏️ Modifier</a>
+    <a href="{% url 'facture_pdf' facture.pk %}" target="_blank" class="btn btn-primary">📄 Voir le PDF</a>
+    <a href="{% url 'facture_pdf' facture.pk %}?disposition=attachment" class="btn btn-primary">⬇️ Télécharger PDF</a>
+    <a href="{% url 'facture_delete' facture.pk %}" class="btn btn-danger">🗑️ Supprimer</a>
+  </div>
+</div>
+
+<div class="card invoice-preview">
+  <div class="invoice-header">
+    <h2>Hôtel Citadel</h2>
+    <p>28 Rue Royale</p>
+    <p>62100 Calais</p>
+    <p>Tél. : +33 668401405</p>
+    <p>citadelhotel62@gmail.com</p>
+  </div>
+
+  <div class="edit-date">Éditée le {{ facture.date_edition|date:"d/m/Y" }}</div>
+
+  <div class="info-row">
+    <div class="statut-label">
+      <strong>{{ facture.get_statut_display|upper }}</strong>
+    </div>
+    <div class="page-num">Page&nbsp;&nbsp;&nbsp;1/1</div>
+  </div>
+
+  <div class="info-row">
+    <div>
+      <div>Réservation n° {{ facture.numero_reservation }}</div>
+      <div>Arrivée : {{ facture.date_arrivee|date:"d/m/Y" }}</div>
+      <div>Départ : {{ facture.date_depart|date:"d/m/Y" }}</div>
+    </div>
+    <div class="client-name">
+      <strong>{{ facture.client.nom_complet_majuscule }}</strong>
+    </div>
+    <div style="width:120px;"></div>
+  </div>
+
+  <table class="invoice-table">
+    <thead>
+      <tr>
+        <th><em>Hôtel</em></th>
+        <th colspan="4">Séjour : {{ facture.type_sejour }}</th>
+        <th></th>
+        <th></th>
+        <th></th>
+      </tr>
+      <tr>
+        <th>Date</th>
+        <th>Chb</th>
+        <th></th>
+        <th>Pers.</th>
+        <th></th>
+        <th>Occupant</th>
+        <th class="num">Taxe séjour</th>
+        <th class="num">Chambre</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for date_nuit in facture.dates_nuitees %}
+        <tr>
+          <td>{{ date_nuit|date:"d/m/Y" }}</td>
+          <td>{{ facture.numero_chambre }}</td>
+          <td></td>
+          <td>{{ facture.nombre_personnes }}</td>
+          <td></td>
+          <td></td>
+          <td class="num">{{ facture.taxe_sejour_par_nuit }} €</td>
+          <td class="num">{{ facture.prix_chambre_ttc_par_nuit }} €</td>
+        </tr>
+      {% endfor %}
+      <tr class="total-row">
+        <td colspan="6" class="text-right"><strong>Total</strong></td>
+        <td class="num">{{ facture.total_taxe_sejour }} €</td>
+        <td class="num">{{ facture.total_chambre }} €</td>
+      </tr>
+      <tr class="total-row">
+        <td colspan="7" class="text-right"><strong>Total Extra(s)</strong></td>
+        <td class="num">{{ facture.extras }} €</td>
+      </tr>
+      <tr class="total-row">
+        <td colspan="7" class="text-right"><strong>Total Hôtel</strong></td>
+        <td class="num">{{ facture.total_hotel }} €</td>
+      </tr>
+      <tr class="total-row big">
+        <td colspan="6"></td>
+        <td class="text-right"><strong>Total TTC</strong></td>
+        <td class="num"><strong>{{ facture.total_ttc }} €</strong></td>
+      </tr>
+      <tr class="total-row">
+        <td colspan="6"></td>
+        <td class="text-right">dont TVA {{ facture.taux_tva }}%</td>
+        <td class="num">{{ facture.total_tva }} €</td>
+      </tr>
+      <tr class="total-row big">
+        <td colspan="6"></td>
+        <td class="text-right"><strong>Reste dû</strong></td>
+        <td class="num"><strong>{{ facture.reste_du }} €</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  {% if facture.notes %}
+    <div class="notes">
+      <strong>Notes :</strong>
+      <p>{{ facture.notes|linebreaks }}</p>
+    </div>
+  {% endif %}
+
+  <div class="invoice-footer">
+    HOTEL CITADEL citadel hotel Capital : 1000 €<br>
+    SIRET : 837873785
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ titre }} — Hôtel Citadel{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{{ titre }}</h1>
+  <a href="{% url 'facture_liste' %}" class="btn btn-secondary">← Retour à la liste</a>
+</div>
+
+<form method="post" class="card form-card">
+  {% csrf_token %}
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-error">
+      {{ form.non_field_errors }}
+    </div>
+  {% endif %}
+
+  <fieldset>
+    <legend>Identification</legend>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="{{ form.numero_reservation.id_for_label }}">N° Réservation</label>
+        {{ form.numero_reservation }}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.date_edition.id_for_label }}">Date édition</label>
+        {{ form.date_edition }}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.statut.id_for_label }}">Statut</label>
+        {{ form.statut }}
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Client</legend>
+
+    <div class="form-group">
+      <label>
+        {{ form.nouveau_client }} Créer un nouveau client
+      </label>
+    </div>
+
+    <div class="form-group" id="client-existant">
+      <label for="{{ form.client.id_for_label }}">Client existant</label>
+      {{ form.client }}
+    </div>
+
+    <div id="nouveau-client" style="display:none;">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="{{ form.civilite.id_for_label }}">Civilité</label>
+          {{ form.civilite }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.nom.id_for_label }}">Nom</label>
+          {{ form.nom }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.prenom.id_for_label }}">Prénom</label>
+          {{ form.prenom }}
+        </div>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Séjour</legend>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="{{ form.date_arrivee.id_for_label }}">Arrivée</label>
+        {{ form.date_arrivee }}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.date_depart.id_for_label }}">Départ</label>
+        {{ form.date_depart }}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.numero_chambre.id_for_label }}">N° Chambre</label>
+        {{ form.numero_chambre }}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.nombre_personnes.id_for_label }}">Nb personnes</label>
+        {{ form.nombre_personnes }}
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="{{ form.type_sejour.id_for_label }}">Type séjour</label>
+      {{ form.type_sejour }}
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Tarification</legend>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="{{ form.prix_chambre_ht.id_for_label }}">Prix chambre HT/nuit (€)</label>
+        {{ form.prix_chambre_ht }}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.taux_tva.id_for_label }}">TVA (%)</label>
+        {{ form.taux_tva }}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.taxe_sejour_unitaire.id_for_label }}">Taxe séjour /nuit/pers (€)</label>
+        {{ form.taxe_sejour_unitaire }}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.extras.id_for_label }}">Extras (€)</label>
+        {{ form.extras }}
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Notes</legend>
+    <div class="form-group">
+      {{ form.notes }}
+    </div>
+  </fieldset>
+
+  <div class="form-actions">
+    <a href="{% url 'facture_liste' %}" class="btn btn-secondary">Annuler</a>
+    <button type="submit" class="btn btn-primary">💾 Enregistrer</button>
+  </div>
+</form>
+
+<script>
+// Toggle affichage "nouveau client" vs "client existant"
+document.addEventListener('DOMContentLoaded', function() {
+  const cb = document.getElementById('{{ form.nouveau_client.id_for_label }}');
+  const existant = document.getElementById('client-existant');
+  const nouveau = document.getElementById('nouveau-client');
+
+  function toggle() {
+    if (cb.checked) {
+      existant.style.display = 'none';
+      nouveau.style.display = 'block';
+    } else {
+      existant.style.display = 'block';
+      nouveau.style.display = 'none';
+    }
+  }
+  cb.addEventListener('change', toggle);
+  toggle();
+});
+</script>
+{% endblock %}
