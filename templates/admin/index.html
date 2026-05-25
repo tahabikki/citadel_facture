@@ -1,0 +1,97 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title_content %}Tableau de bord{% endblock %}
+
+{% block content %}
+<div class="admin-section">
+    <div class="section-title">
+        <i class="fas fa-file-invoice"></i> Gestion des factures
+    </div>
+    <div class="module-grid">
+        <div class="module-card">
+            <div class="module-name">
+                <i class="fas fa-receipt"></i> Factures
+            </div>
+            <div class="module-links">
+                <a href="{% url 'admin:factures_facture_changelist' %}">
+                    <i class="fas fa-list"></i> Voir toutes les factures
+                </a>
+                <a href="{% url 'admin:factures_facture_add' %}">
+                    <i class="fas fa-plus-circle"></i> Ajouter une facture
+                </a>
+            </div>
+        </div>
+
+        <div class="module-card">
+            <div class="module-name">
+                <i class="fas fa-users"></i> Clients
+            </div>
+            <div class="module-links">
+                <a href="{% url 'admin:factures_client_changelist' %}">
+                    <i class="fas fa-list"></i> Voir tous les clients
+                </a>
+                <a href="{% url 'admin:factures_client_add' %}">
+                    <i class="fas fa-user-plus"></i> Ajouter un client
+                </a>
+            </div>
+        </div>
+
+        <div class="module-card">
+            <div class="module-name">
+                <i class="fas fa-cog"></i> Paramètres
+            </div>
+            <div class="module-links">
+                <a href="{% url 'admin:factures_facture_changelist' %}">
+                    <i class="fas fa-sliders-h"></i> Configuration
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="admin-section">
+    <div class="section-title">
+        <i class="fas fa-lock"></i> Authentification et autorisation
+    </div>
+    <div class="module-grid">
+        <div class="module-card">
+            <div class="module-name">
+                <i class="fas fa-users-cog"></i> Utilisateurs
+            </div>
+            <div class="module-links">
+                <a href="{% url 'admin:auth_user_changelist' %}">
+                    <i class="fas fa-list"></i> Voir tous les utilisateurs
+                </a>
+                <a href="{% url 'admin:auth_user_add' %}">
+                    <i class="fas fa-user-plus"></i> Ajouter un utilisateur
+                </a>
+            </div>
+        </div>
+
+        <div class="module-card">
+            <div class="module-name">
+                <i class="fas fa-object-group"></i> Groupes
+            </div>
+            <div class="module-links">
+                <a href="{% url 'admin:auth_group_changelist' %}">
+                    <i class="fas fa-list"></i> Voir tous les groupes
+                </a>
+                <a href="{% url 'admin:auth_group_add' %}">
+                    <i class="fas fa-plus-circle"></i> Ajouter un groupe
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="recent-actions">
+    <div class="recent-actions-title">
+        <i class="fas fa-history" style="margin-right: 8px;"></i> Actions récentes
+    </div>
+    <div class="recent-actions-empty">
+        <i class="fas fa-inbox"></i>
+        <p>Aucune action récente disponible</p>
+    </div>
+</div>
+{% endblock %}
