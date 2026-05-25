@@ -1,6 +1,7 @@
 """Formulaires Django."""
 from datetime import date
 from django import forms
+from django.contrib.auth.models import User
 from django.utils import timezone
 from .models import Facture, Client
 
@@ -8,10 +9,16 @@ from .models import Facture, Client
 class ClientForm(forms.ModelForm):
     class Meta:
         model = Client
-        fields = ['civilite', 'nom', 'prenom', 'email', 'telephone', 'adresse']
+        fields = ['civilite', 'nom', 'prenom', 'societe', 'email', 'telephone', 'adresse']
         widgets = {
             'adresse': forms.Textarea(attrs={'rows': 2}),
         }
+
+
+class UserSettingsForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email']
 
 
 class FactureForm(forms.ModelForm):
@@ -25,6 +32,9 @@ class FactureForm(forms.ModelForm):
     )
     nom = forms.CharField(max_length=100, required=False, label='Nom')
     prenom = forms.CharField(max_length=100, required=False, label='Prénom')
+    societe = forms.CharField(max_length=150, required=False, label='Societe')
+    email = forms.EmailField(required=False, label='Email')
+    telephone = forms.CharField(max_length=30, required=False, label='Téléphone')
 
     class Meta:
         model = Facture
@@ -83,6 +93,9 @@ class FactureForm(forms.ModelForm):
                 civilite=self.cleaned_data['civilite'],
                 nom=self.cleaned_data['nom'],
                 prenom=self.cleaned_data['prenom'],
+                societe=self.cleaned_data.get('societe', ''),
+                email=self.cleaned_data.get('email', ''),
+                telephone=self.cleaned_data.get('telephone', ''),
             )
             self.instance.client = client
         return super().save(commit=commit)

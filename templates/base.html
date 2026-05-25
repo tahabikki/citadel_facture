@@ -4,61 +4,85 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Hôtel Citadel{% endblock %}</title>
+  <title>{% block title %}Hotel Citadel Admin{% endblock %}</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="{% static 'app.css' %}?v=4">
-  <style>
-    html { 
-      scroll-behavior: smooth; 
-    }
-    /* Icon Premium Styling */
-    .icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .icon-sm { font-size: 18px; }
-    .icon-md { font-size: 24px; }
-    .icon-lg { font-size: 32px; }
-    /* Smooth transitions for all interactive elements */
-    a, button, input, select, textarea {
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-  </style>
+  <link rel="stylesheet" href="{% static 'app.css' %}?v=10">
 </head>
-<body>
+<body class="hc-admin-body">
+  <div class="hc-admin">
+    <aside class="hc-sidebar" aria-label="Navigation principale">
+      <a href="{% url 'dashboard' %}" class="hc-brand">
+        <img src="{% static 'assets/white_logo.png' %}" alt="Hotel Citadel">
+      </a>
 
-<header class="navbar">
-  <div class="nav-inner">
-    <a href="{% url 'facture_liste' %}" class="brand">
-      <img src="{% static 'assets/white_logo.png' %}" alt="Hôtel Citadel" class="nav-logo">
-    </a>
-    <nav>
-      <a href="{% url 'facture_liste' %}">Factures</a>
-      <a href="{% url 'clients_liste' %}">Clients</a>
-      <a href="{% url 'facture_create' %}">+ Nouvelle facture</a>
-      <a href="/admin/" target="_blank">Admin</a>
-    </nav>
-  </div>
-</header>
+      <nav class="hc-nav">
+        <a href="{% url 'dashboard' %}" class="hc-nav-link {% if request.resolver_match.url_name == 'dashboard' %}is-active{% endif %}">
+          <i class="fas fa-gauge-high"></i><span>Tableau de bord</span>
+        </a>
 
-<main class="container">
-  {% if messages %}
-    <div class="messages">
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-      {% endfor %}
+        <div class="hc-nav-group">
+          <div class="hc-nav-title"><i class="fas fa-file-invoice"></i><span>Factures</span></div>
+          <a href="{% url 'facture_liste' %}" class="hc-nav-link {% if request.resolver_match.url_name == 'facture_liste' %}is-active{% endif %}">
+            <i class="fas fa-list"></i><span>View All Invoices</span>
+          </a>
+          <a href="{% url 'facture_create' %}" class="hc-nav-link {% if request.resolver_match.url_name == 'facture_create' %}is-active{% endif %}">
+            <i class="fas fa-circle-plus"></i><span>Create New Invoice</span>
+          </a>
+        </div>
+
+        <div class="hc-nav-group">
+          <div class="hc-nav-title"><i class="fas fa-address-book"></i><span>Clients</span></div>
+          <a href="{% url 'clients_liste' %}" class="hc-nav-link {% if request.resolver_match.url_name == 'clients_liste' %}is-active{% endif %}">
+            <i class="fas fa-users"></i><span>View All Clients</span>
+          </a>
+          <a href="{% url 'client_create' %}" class="hc-nav-link {% if request.resolver_match.url_name == 'client_create' %}is-active{% endif %}">
+            <i class="fas fa-user-plus"></i><span>Create New Client</span>
+          </a>
+        </div>
+
+        <div class="hc-nav-group">
+          <div class="hc-nav-title"><i class="fas fa-user-shield"></i><span>Utilisateur</span></div>
+          <a href="{% url 'user_settings' %}" class="hc-nav-link {% if request.resolver_match.url_name == 'user_settings' %}is-active{% endif %}">
+            <i class="fas fa-gear"></i><span>Parametres</span>
+          </a>
+          <a href="{% url 'admin:index' %}" class="hc-nav-link">
+            <i class="fas fa-screwdriver-wrench"></i><span>Django admin</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <div class="hc-main">
+      <header class="hc-topbar">
+        <div>
+          <p class="hc-eyebrow">Hotel Citadel</p>
+          <h1>{% block page_title %}Tableau de bord{% endblock %}</h1>
+        </div>
+        {% if user.is_authenticated %}
+          <div class="hc-user-panel">
+            <span class="hc-user-chip"><i class="fas fa-user-circle"></i>{{ user.get_full_name|default:user.username }}</span>
+            <a class="hc-icon-link" href="{% url 'user_settings' %}" title="Parametres"><i class="fas fa-gear"></i></a>
+            <form method="post" action="{% url 'admin_logout' %}">
+              {% csrf_token %}
+              <button class="hc-icon-link" type="submit" title="Deconnexion"><i class="fas fa-right-from-bracket"></i></button>
+            </form>
+          </div>
+        {% endif %}
+      </header>
+
+      <main class="hc-content">
+        {% if messages %}
+          <div class="hc-messages">
+            {% for message in messages %}
+              <div class="hc-alert hc-alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+      </main>
     </div>
-  {% endif %}
-
-  {% block content %}{% endblock %}
-</main>
-
-<footer class="footer">
-  <small>Hôtel Citadel — Gestion locale des factures</small>
-</footer>
-
-<script src="{% static 'app.js' %}"></script>
+  </div>
+  <script src="{% static 'app.js' %}?v=4"></script>
 </body>
 </html>

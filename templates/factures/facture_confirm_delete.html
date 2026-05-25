@@ -1,23 +1,16 @@
 {% extends 'base.html' %}
 
-{% block title %}Supprimer facture n°{{ facture.numero_reservation }}{% endblock %}
+{% block title %}Supprimer facture | Hotel Citadel{% endblock %}
+{% block page_title %}Supprimer facture{% endblock %}
 
 {% block content %}
-<div class="card" style="border-left: 4px solid #e8605f;">
-  <h1><i class="fas fa-exclamation-triangle" style="color: #e8605f; margin-right: 12px;"></i> Confirmer la suppression</h1>
-  <p>
-    Es-tu sûr de vouloir supprimer la facture
-    <strong>n°{{ facture.numero_reservation }}</strong>
-    de <strong>{{ facture.client }}</strong> ?
-  </p>
-  <p>Cette action est irréversible.</p>
-
-  <form method="post">
+<section class="hc-panel hc-danger-panel">
+  <h2>Confirmer la suppression</h2>
+  <p>Supprimer la facture <strong>n {{ facture.numero_reservation }}</strong> de <strong>{{ facture.client }}</strong> ?</p>
+  <form method="post" class="hc-form-actions">
     {% csrf_token %}
-    <div class="form-actions">
-      <a href="{% url 'facture_detail' facture.pk %}" class="btn btn-secondary"><i class="fas fa-times"></i> Annuler</a>
-      <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Confirmer la suppression</button>
-    </div>
+    <a href="{% url 'facture_detail' facture.pk %}" class="hc-btn hc-btn-muted">Annuler</a>
+    <button type="submit" class="hc-btn hc-btn-danger"><i class="fas fa-trash"></i> Supprimer</button>
   </form>
-</div>
+</section>
 {% endblock %}

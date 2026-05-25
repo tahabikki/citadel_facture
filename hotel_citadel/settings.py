@@ -82,5 +82,5 @@ DATE_INPUT_FORMATS = ['%d/%m/%Y', '%Y-%m-%d']
 
 # Login redirect
 LOGIN_URL = '/admin/login/'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/admin/'
 LOGOUT_REDIRECT_URL = '/admin/login/'

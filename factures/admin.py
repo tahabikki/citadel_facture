@@ -25,8 +25,8 @@ class ParametresHotelAdmin(admin.ModelAdmin):
 
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ('nom', 'prenom', 'civilite', 'email', 'telephone', 'cree_le')
-    search_fields = ('nom', 'prenom', 'email')
+    list_display = ('nom', 'prenom', 'civilite', 'societe', 'email', 'telephone', 'cree_le')
+    search_fields = ('nom', 'prenom', 'societe', 'email')
     list_filter = ('civilite',)
     ordering = ('nom', 'prenom')
 

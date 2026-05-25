@@ -51,11 +51,13 @@ class Client(models.Model):
         ('M.', 'Monsieur'),
         ('Mme', 'Madame'),
         ('Mlle', 'Mademoiselle'),
+        ('Société', 'Société'),
     ]
 
     civilite = models.CharField(max_length=10, choices=CIVILITE_CHOICES, default='M.')
     nom = models.CharField(max_length=100)
     prenom = models.CharField(max_length=100)
+    societe = models.CharField(max_length=150, blank=True, verbose_name='Societe')
     email = models.EmailField(blank=True)
     telephone = models.CharField(max_length=30, blank=True)
     adresse = models.TextField(blank=True)
@@ -67,11 +69,13 @@ class Client(models.Model):
         verbose_name_plural = 'Clients'
 
     def __str__(self):
-        return f'{self.civilite} {self.nom} {self.prenom}'
+        identite = f'{self.civilite} {self.nom} {self.prenom}'.strip()
+        return f'{identite} - {self.societe}' if self.societe else identite
 
     def nom_complet_majuscule(self):
         civ = dict(self.CIVILITE_CHOICES).get(self.civilite, self.civilite)
-        return f'{civ} {self.nom.upper()} {self.prenom.upper()}'
+        identite = f'{civ} {self.nom.upper()} {self.prenom.upper()}'.strip()
+        return f'{identite} - {self.societe.upper()}' if self.societe else identite
 
 
 class Facture(models.Model):

@@ -1,123 +1,78 @@
 {% extends 'base.html' %}
 
-{% block title %}Facture n°{{ facture.numero_reservation }}{% endblock %}
+{% block title %}Facture {{ facture.numero_reservation }} | Hotel Citadel{% endblock %}
+{% block page_title %}Facture n {{ facture.numero_reservation }}{% endblock %}
 
 {% block content %}
-<div class="page-header">
-  <h1><i class="fas fa-receipt"></i> Facture n°{{ facture.numero_reservation }}</h1>
-  <div class="actions-bar">
-    <a href="{% url 'facture_liste' %}" class="btn btn-secondary"><i class="fas fa-list"></i> Liste</a>
-    <a href="{% url 'facture_update' facture.pk %}" class="btn"><i class="fas fa-edit"></i> Modifier</a>
-    <a href="{% url 'facture_pdf' facture.pk %}" target="_blank" class="btn btn-primary"><i class="fas fa-file-pdf"></i> Voir le PDF</a>
-    <a href="{% url 'facture_pdf' facture.pk %}?disposition=attachment" class="btn btn-primary"><i class="fas fa-download"></i> Télécharger PDF</a>
-    <a href="{% url 'facture_delete' facture.pk %}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Supprimer</a>
-  </div>
-</div>
-
-<div class="card invoice-preview">
-  <div class="invoice-header">
-    <h2>Hôtel Citadel</h2>
-    <p>28 Rue Royale</p>
-    <p>62100 Calais</p>
-    <p>Tél. : +33 668401405</p>
-    <p>citadelhotel62@gmail.com</p>
-  </div>
-
-  <div class="edit-date">Éditée le {{ facture.date_edition|date:"d/m/Y" }}</div>
-
-  <div class="info-row">
-    <div class="statut-label">
-      <strong>{{ facture.get_statut_display|upper }}</strong>
-    </div>
-    <div class="page-num">Page&nbsp;&nbsp;&nbsp;1/1</div>
-  </div>
-
-  <div class="info-row">
+<section class="hc-panel">
+  <div class="hc-panel-head">
     <div>
-      <div>Réservation n° {{ facture.numero_reservation }}</div>
-      <div>Arrivée : {{ facture.date_arrivee|date:"d/m/Y" }}</div>
-      <div>Départ : {{ facture.date_depart|date:"d/m/Y" }}</div>
+      <h2>Apercu et scan</h2>
+      <p>Controle rapide avant edition ou export PDF.</p>
     </div>
-    <div class="client-name">
-      <strong>{{ facture.client.nom_complet_majuscule }}</strong>
+    <div class="hc-action-row">
+      <a href="{% url 'facture_liste' %}" class="hc-btn hc-btn-muted"><i class="fas fa-list"></i> Liste</a>
+      <a href="{% url 'facture_update' facture.pk %}" class="hc-btn"><i class="fas fa-pen"></i> Modifier</a>
+      <a href="{% url 'facture_pdf' facture.pk %}" target="_blank" class="hc-btn hc-btn-primary"><i class="fas fa-file-pdf"></i> Voir PDF</a>
+      <a href="{% url 'facture_pdf' facture.pk %}?disposition=attachment" class="hc-btn hc-btn-primary"><i class="fas fa-download"></i> Telecharger</a>
+      <a href="{% url 'facture_delete' facture.pk %}" class="hc-btn hc-btn-danger"><i class="fas fa-trash"></i> Supprimer</a>
     </div>
-    <div style="width:120px;"></div>
   </div>
 
-  <table class="invoice-table">
-    <thead>
-      <tr>
-        <th><em>Hôtel</em></th>
-        <th colspan="4">Séjour : {{ facture.type_sejour }}</th>
-        <th></th>
-        <th></th>
-        <th></th>
-      </tr>
-      <tr>
-        <th>Date</th>
-        <th>Chb</th>
-        <th></th>
-        <th>Pers.</th>
-        <th></th>
-        <th>Occupant</th>
-        <th class="num">Taxe séjour</th>
-        <th class="num">Chambre</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for date_nuit in facture.dates_nuitees %}
-        <tr>
-          <td>{{ date_nuit|date:"d/m/Y" }}</td>
-          <td>{{ facture.numero_chambre }}</td>
-          <td></td>
-          <td>{{ facture.nombre_personnes }}</td>
-          <td></td>
-          <td></td>
-          <td class="num">{{ facture.taxe_sejour_par_nuit }} €</td>
-          <td class="num">{{ facture.prix_chambre_ttc_par_nuit }} €</td>
-        </tr>
-      {% endfor %}
-      <tr class="total-row">
-        <td colspan="6" class="text-right"><strong>Total</strong></td>
-        <td class="num">{{ facture.total_taxe_sejour }} €</td>
-        <td class="num">{{ facture.total_chambre }} €</td>
-      </tr>
-      <tr class="total-row">
-        <td colspan="7" class="text-right"><strong>Total Extra(s)</strong></td>
-        <td class="num">{{ facture.extras }} €</td>
-      </tr>
-      <tr class="total-row">
-        <td colspan="7" class="text-right"><strong>Total Hôtel</strong></td>
-        <td class="num">{{ facture.total_hotel }} €</td>
-      </tr>
-      <tr class="total-row big">
-        <td colspan="6"></td>
-        <td class="text-right"><strong>Total TTC</strong></td>
-        <td class="num"><strong>{{ facture.total_ttc }} €</strong></td>
-      </tr>
-      <tr class="total-row">
-        <td colspan="6"></td>
-        <td class="text-right">dont TVA {{ facture.taux_tva }}%</td>
-        <td class="num">{{ facture.total_tva }} €</td>
-      </tr>
-      <tr class="total-row big">
-        <td colspan="6"></td>
-        <td class="text-right"><strong>Reste dû</strong></td>
-        <td class="num"><strong>{{ facture.reste_du }} €</strong></td>
-      </tr>
-    </tbody>
-  </table>
+  <article class="hc-invoice-preview">
+    <header>
+      <h2>Hotel Citadel</h2>
+      <p>28 Rue Royale, 62100 Calais</p>
+      <p>Tel. : +33 668401405 | citadelhotel62@gmail.com</p>
+    </header>
 
-  {% if facture.notes %}
-    <div class="notes">
-      <strong>Notes :</strong>
-      <p>{{ facture.notes|linebreaks }}</p>
+    <div class="hc-invoice-meta">
+      <div>
+        <strong>{{ facture.get_statut_display|upper }}</strong>
+        <p>Reservation n {{ facture.numero_reservation }}</p>
+        <p>Arrivee : {{ facture.date_arrivee|date:"d/m/Y" }}</p>
+        <p>Depart : {{ facture.date_depart|date:"d/m/Y" }}</p>
+      </div>
+      <div>
+        <p>Editee le {{ facture.date_edition|date:"d/m/Y" }}</p>
+        <strong>{{ facture.client.nom_complet_majuscule }}</strong>
+      </div>
     </div>
-  {% endif %}
 
-  <div class="invoice-footer">
-    HOTEL CITADEL citadel hotel Capital : 1000 €<br>
-    SIRET : 837873785
-  </div>
-</div>
+    <div class="hc-table-wrap">
+      <table class="hc-invoice-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Chb</th>
+            <th>Pers.</th>
+            <th class="hc-num">Taxe sejour</th>
+            <th class="hc-num">Chambre</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for date_nuit in facture.dates_nuitees %}
+            <tr>
+              <td>{{ date_nuit|date:"d/m/Y" }}</td>
+              <td>{{ facture.numero_chambre }}</td>
+              <td>{{ facture.nombre_personnes }}</td>
+              <td class="hc-num">{{ facture.taxe_sejour_par_nuit }} EUR</td>
+              <td class="hc-num">{{ facture.prix_chambre_ttc_par_nuit }} EUR</td>
+            </tr>
+          {% endfor %}
+          <tr><td colspan="3" class="hc-num"><strong>Total</strong></td><td class="hc-num">{{ facture.total_taxe_sejour }} EUR</td><td class="hc-num">{{ facture.total_chambre }} EUR</td></tr>
+          <tr><td colspan="4" class="hc-num">Total extra(s)</td><td class="hc-num">{{ facture.extras }} EUR</td></tr>
+          <tr><td colspan="4" class="hc-num">Total hotel</td><td class="hc-num">{{ facture.total_hotel }} EUR</td></tr>
+          <tr><td colspan="4" class="hc-num"><strong>Total TTC</strong></td><td class="hc-num"><strong>{{ facture.total_ttc }} EUR</strong></td></tr>
+          <tr><td colspan="4" class="hc-num">dont TVA {{ facture.taux_tva }}%</td><td class="hc-num">{{ facture.total_tva }} EUR</td></tr>
+          <tr><td colspan="4" class="hc-num"><strong>Reste du</strong></td><td class="hc-num"><strong>{{ facture.reste_du }} EUR</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    {% if facture.notes %}
+      <div class="hc-notes">{{ facture.notes|linebreaks }}</div>
+    {% endif %}
+  </article>
+</section>
 {% endblock %}

@@ -1,83 +1,85 @@
 {% extends 'base.html' %}
 
-{% block title %}Factures — Hôtel Citadel{% endblock %}
+{% block title %}Factures | Hotel Citadel{% endblock %}
+{% block page_title %}Factures{% endblock %}
 
 {% block content %}
-<div class="page-header">
-  <h1><i class="fas fa-receipt"></i> Factures</h1>
-  <a href="{% url 'facture_create' %}" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Nouvelle facture</a>
-</div>
-
-<form method="get" class="search-bar">
-  <input type="text" name="q" value="{{ q }}" placeholder="Rechercher (n° réservation, nom client)…">
-  <select name="statut">
-    <option value="">— Tous les statuts —</option>
-    {% for value, label in statuts %}
-      <option value="{{ value }}" {% if value == statut %}selected{% endif %}>{{ label }}</option>
-    {% endfor %}
-  </select>
-  <button type="submit" class="btn"><i class="fas fa-filter"></i> Filtrer</button>
-  {% if q or statut %}
-    <a href="{% url 'facture_liste' %}" class="btn btn-secondary"><i class="fas fa-redo"></i> Réinitialiser</a>
-  {% endif %}
-</form>
-
-<div class="card">
-  <table class="table">
-    <thead>
-      <tr>
-        <th>N° Résa</th>
-        <th>Client</th>
-        <th>Arrivée</th>
-        <th>Départ</th>
-        <th>Nuits</th>
-        <th>Statut</th>
-        <th class="num">Total TTC</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for f in factures %}
-        <tr>
-          <td><strong>{{ f.numero_reservation }}</strong></td>
-          <td>{{ f.client }}</td>
-          <td>{{ f.date_arrivee|date:"d/m/Y" }}</td>
-          <td>{{ f.date_depart|date:"d/m/Y" }}</td>
-          <td>{{ f.nombre_nuits }}</td>
-          <td>
-            <span class="badge badge-{{ f.statut|lower }}">
-              {{ f.get_statut_display }}
-            </span>
-          </td>
-          <td class="num">{{ f.total_ttc }} €</td>
-          <td class="actions">
-            <a href="{% url 'facture_detail' f.pk %}" title="Voir" class="action-btn"><i class="fas fa-eye"></i></a>
-            <a href="{% url 'facture_update' f.pk %}" title="Modifier" class="action-btn"><i class="fas fa-edit"></i></a>
-            <a href="{% url 'facture_pdf' f.pk %}" target="_blank" title="PDF" class="action-btn"><i class="fas fa-file-pdf"></i></a>
-            <a href="{% url 'facture_delete' f.pk %}" title="Supprimer" class="action-btn danger"><i class="fas fa-trash-alt"></i></a>
-          </td>
-        </tr>
-      {% empty %}
-        <tr>
-          <td colspan="8" class="empty">
-            Aucune facture pour le moment.
-            <a href="{% url 'facture_create' %}">Créer la première</a>
-          </td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
-
-{% if is_paginated %}
-  <div class="pagination">
-    {% if page_obj.has_previous %}
-      <a href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}"><i class="fas fa-chevron-left"></i> Précédent</a>
-    {% endif %}
-    <span>Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
-    {% if page_obj.has_next %}
-      <a href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}">Suivant <i class="fas fa-chevron-right"></i></a>
-    {% endif %}
+<section class="hc-panel">
+  <div class="hc-panel-head">
+    <div>
+      <h2>Gestion des factures</h2>
+      <p>Recherche, consultation, edition et export PDF.</p>
+    </div>
+    <a href="{% url 'facture_create' %}" class="hc-btn hc-btn-primary"><i class="fas fa-plus"></i> Nouvelle facture</a>
   </div>
-{% endif %}
+
+  <form method="get" class="hc-filterbar">
+    <input type="text" name="q" value="{{ q }}" placeholder="Rechercher par numero ou client">
+    <select name="statut">
+      <option value="">Tous les statuts</option>
+      {% for value, label in statuts %}
+        <option value="{{ value }}" {% if value == statut %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="hc-btn"><i class="fas fa-filter"></i> Filtrer</button>
+    {% if q or statut %}
+      <a href="{% url 'facture_liste' %}" class="hc-btn hc-btn-muted"><i class="fas fa-rotate-left"></i> Reset</a>
+    {% endif %}
+  </form>
+
+  <div class="hc-table-wrap">
+    <table class="hc-table">
+      <thead>
+        <tr>
+          <th>N resa</th>
+          <th>Client</th>
+          <th>Arrivee</th>
+          <th>Depart</th>
+          <th>Nuits</th>
+          <th>Statut</th>
+          <th class="hc-num">Total TTC</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for f in factures %}
+          <tr>
+            <td><strong>{{ f.numero_reservation }}</strong></td>
+            <td>{{ f.client }}</td>
+            <td>{{ f.date_arrivee|date:"d/m/Y" }}</td>
+            <td>{{ f.date_depart|date:"d/m/Y" }}</td>
+            <td>{{ f.nombre_nuits }}</td>
+            <td><span class="hc-badge hc-badge-{{ f.statut|lower }}">{{ f.get_statut_display }}</span></td>
+            <td class="hc-num">{{ f.total_ttc }} EUR</td>
+            <td class="hc-actions">
+              <a href="{% url 'facture_detail' f.pk %}" title="Voir / scanner"><i class="fas fa-eye"></i></a>
+              <a href="{% url 'facture_update' f.pk %}" title="Modifier"><i class="fas fa-pen"></i></a>
+              <a href="{% url 'facture_pdf' f.pk %}" target="_blank" title="Voir PDF"><i class="fas fa-file-pdf"></i></a>
+              <a href="{% url 'facture_pdf' f.pk %}?disposition=attachment" title="Telecharger PDF"><i class="fas fa-download"></i></a>
+              <a href="{% url 'facture_delete' f.pk %}" title="Supprimer" class="is-danger"><i class="fas fa-trash"></i></a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="8" class="hc-empty">Aucune facture trouvee.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if is_paginated %}
+    <nav class="hc-pagination" aria-label="Pagination">
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{{ page_query }}"><i class="fas fa-chevron-left"></i> Previous</a>
+      {% else %}
+        <span class="is-disabled"><i class="fas fa-chevron-left"></i> Previous</span>
+      {% endif %}
+      <strong>Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</strong>
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{{ page_query }}">Next <i class="fas fa-chevron-right"></i></a>
+      {% else %}
+        <span class="is-disabled">Next <i class="fas fa-chevron-right"></i></span>
+      {% endif %}
+    </nav>
+  {% endif %}
+</section>
 {% endblock %}

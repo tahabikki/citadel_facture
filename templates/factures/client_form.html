@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ titre }} | Hotel Citadel{% endblock %}
+{% block page_title %}{{ titre }}{% endblock %}
+
+{% block content %}
+<form method="post" class="hc-panel hc-form-panel">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  <div class="hc-form-grid">
+    {% for field in form %}
+      <div class="hc-field {% if field.name == 'adresse' %}hc-field-wide{% endif %}">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {{ field.errors }}
+      </div>
+    {% endfor %}
+  </div>
+  <div class="hc-form-actions">
+    <a href="{% url 'clients_liste' %}" class="hc-btn hc-btn-muted">Annuler</a>
+    <button type="submit" class="hc-btn hc-btn-primary"><i class="fas fa-floppy-disk"></i> Enregistrer</button>
+  </div>
+</form>
+{% endblock %}

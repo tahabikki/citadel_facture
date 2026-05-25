@@ -1,151 +1,87 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ titre }} — Hôtel Citadel{% endblock %}
+{% block title %}{{ titre }} | Hotel Citadel{% endblock %}
+{% block page_title %}{{ titre }}{% endblock %}
 
 {% block content %}
-<div class="page-header">
-  <h1><i class="fas fa-file-contract"></i> {{ titre }}</h1>
-  <a href="{% url 'facture_liste' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Retour</a>
-</div>
-
-<form method="post" class="card form-card">
+<form method="post" class="hc-panel hc-form-panel">
   {% csrf_token %}
+  {% if form.non_field_errors %}<div class="hc-alert hc-alert-error">{{ form.non_field_errors }}</div>{% endif %}
 
-  {% if form.non_field_errors %}
-    <div class="alert alert-error">
-      {{ form.non_field_errors }}
-    </div>
-  {% endif %}
-
-  <fieldset>
+  <fieldset class="hc-fieldset">
     <legend>Identification</legend>
-    <div class="form-row">
-      <div class="form-group">
-        <label for="{{ form.numero_reservation.id_for_label }}">N° Réservation</label>
-        {{ form.numero_reservation }}
-      </div>
-      <div class="form-group">
-        <label for="{{ form.date_edition.id_for_label }}">Date édition</label>
-        {{ form.date_edition }}
-      </div>
-      <div class="form-group">
-        <label for="{{ form.statut.id_for_label }}">Statut</label>
-        {{ form.statut }}
-      </div>
+    <div class="hc-form-grid">
+      <div class="hc-field"><label for="{{ form.numero_reservation.id_for_label }}">N reservation</label>{{ form.numero_reservation }}{{ form.numero_reservation.errors }}</div>
+      <div class="hc-field"><label for="{{ form.date_edition.id_for_label }}">Date edition</label>{{ form.date_edition }}{{ form.date_edition.errors }}</div>
+      <div class="hc-field"><label for="{{ form.statut.id_for_label }}">Statut</label>{{ form.statut }}{{ form.statut.errors }}</div>
     </div>
   </fieldset>
 
-  <fieldset>
+  <fieldset class="hc-fieldset">
     <legend>Client</legend>
-
-    <div class="form-group">
-      <label>
-        {{ form.nouveau_client }} Créer un nouveau client
-      </label>
+    <div class="hc-choice-row">
+      <label class="hc-toggle">{{ form.nouveau_client }} <span>Creer un nouveau client inline</span></label>
     </div>
-
-    <div class="form-group" id="client-existant">
+    <div id="client-existant" class="hc-field">
       <label for="{{ form.client.id_for_label }}">Client existant</label>
-      {{ form.client }}
+      {{ form.client }}{{ form.client.errors }}
     </div>
-
-    <div id="nouveau-client" style="display:none;">
-      <div class="form-row">
-        <div class="form-group">
-          <label for="{{ form.civilite.id_for_label }}">Civilité</label>
-          {{ form.civilite }}
-        </div>
-        <div class="form-group">
-          <label for="{{ form.nom.id_for_label }}">Nom</label>
-          {{ form.nom }}
-        </div>
-        <div class="form-group">
-          <label for="{{ form.prenom.id_for_label }}">Prénom</label>
-          {{ form.prenom }}
-        </div>
+    <div id="nouveau-client" class="hc-inline-panel">
+      <div class="hc-form-grid">
+        <div class="hc-field"><label for="{{ form.civilite.id_for_label }}">Monsieur/Madame</label>{{ form.civilite }}</div>
+        <div class="hc-field"><label for="{{ form.nom.id_for_label }}">Nom</label>{{ form.nom }}</div>
+        <div class="hc-field"><label for="{{ form.prenom.id_for_label }}">Prenom</label>{{ form.prenom }}</div>
+        <div class="hc-field"><label for="{{ form.societe.id_for_label }}">Societe</label>{{ form.societe }}</div>
+        <div class="hc-field"><label for="{{ form.email.id_for_label }}">Email</label>{{ form.email }}</div>
+        <div class="hc-field"><label for="{{ form.telephone.id_for_label }}">Telephone</label>{{ form.telephone }}</div>
       </div>
     </div>
   </fieldset>
 
-  <fieldset>
-    <legend>Séjour</legend>
-    <div class="form-row">
-      <div class="form-group">
-        <label for="{{ form.date_arrivee.id_for_label }}">Arrivée</label>
-        {{ form.date_arrivee }}
-      </div>
-      <div class="form-group">
-        <label for="{{ form.date_depart.id_for_label }}">Départ</label>
-        {{ form.date_depart }}
-      </div>
-      <div class="form-group">
-        <label for="{{ form.numero_chambre.id_for_label }}">N° Chambre</label>
-        {{ form.numero_chambre }}
-      </div>
-      <div class="form-group">
-        <label for="{{ form.nombre_personnes.id_for_label }}">Nb personnes</label>
-        {{ form.nombre_personnes }}
-      </div>
-    </div>
-    <div class="form-group">
-      <label for="{{ form.type_sejour.id_for_label }}">Type séjour</label>
-      {{ form.type_sejour }}
+  <fieldset class="hc-fieldset">
+    <legend>Sejour</legend>
+    <div class="hc-form-grid">
+      <div class="hc-field"><label for="{{ form.date_arrivee.id_for_label }}">Arrivee</label>{{ form.date_arrivee }}{{ form.date_arrivee.errors }}</div>
+      <div class="hc-field"><label for="{{ form.date_depart.id_for_label }}">Depart</label>{{ form.date_depart }}{{ form.date_depart.errors }}</div>
+      <div class="hc-field"><label for="{{ form.numero_chambre.id_for_label }}">Chambre</label>{{ form.numero_chambre }}</div>
+      <div class="hc-field"><label for="{{ form.nombre_personnes.id_for_label }}">Personnes</label>{{ form.nombre_personnes }}</div>
+      <div class="hc-field hc-field-wide"><label for="{{ form.type_sejour.id_for_label }}">Type sejour</label>{{ form.type_sejour }}</div>
     </div>
   </fieldset>
 
-  <fieldset>
+  <fieldset class="hc-fieldset">
     <legend>Tarification</legend>
-    <div class="form-row">
-      <div class="form-group">
-        <label for="{{ form.prix_chambre_ht.id_for_label }}">Prix chambre HT/nuit (€)</label>
-        {{ form.prix_chambre_ht }}
-      </div>
-      <div class="form-group">
-        <label for="{{ form.taux_tva.id_for_label }}">TVA (%)</label>
-        {{ form.taux_tva }}
-      </div>
-      <div class="form-group">
-        <label for="{{ form.taxe_sejour_unitaire.id_for_label }}">Taxe séjour /nuit/pers (€)</label>
-        {{ form.taxe_sejour_unitaire }}
-      </div>
-      <div class="form-group">
-        <label for="{{ form.extras.id_for_label }}">Extras (€)</label>
-        {{ form.extras }}
-      </div>
+    <div class="hc-form-grid">
+      <div class="hc-field"><label for="{{ form.prix_chambre_ht.id_for_label }}">Prix HT/nuit</label>{{ form.prix_chambre_ht }}</div>
+      <div class="hc-field"><label for="{{ form.taux_tva.id_for_label }}">TVA (%)</label>{{ form.taux_tva }}</div>
+      <div class="hc-field"><label for="{{ form.taxe_sejour_unitaire.id_for_label }}">Taxe sejour</label>{{ form.taxe_sejour_unitaire }}</div>
+      <div class="hc-field"><label for="{{ form.extras.id_for_label }}">Extras</label>{{ form.extras }}</div>
     </div>
   </fieldset>
 
-  <fieldset>
+  <fieldset class="hc-fieldset">
     <legend>Notes</legend>
-    <div class="form-group">
-      {{ form.notes }}
-    </div>
+    <div class="hc-field">{{ form.notes }}</div>
   </fieldset>
 
-  <div class="form-actions">
-    <a href="{% url 'facture_liste' %}" class="btn btn-secondary">Annuler</a>
-    <button type="submit" class="btn btn-primary">💾 Enregistrer</button>
+  <div class="hc-form-actions">
+    <a href="{% url 'facture_liste' %}" class="hc-btn hc-btn-muted">Annuler</a>
+    <button type="submit" class="hc-btn hc-btn-primary"><i class="fas fa-floppy-disk"></i> Enregistrer</button>
   </div>
 </form>
 
 <script>
-// Toggle affichage "nouveau client" vs "client existant"
-document.addEventListener('DOMContentLoaded', function() {
-  const cb = document.getElementById('{{ form.nouveau_client.id_for_label }}');
-  const existant = document.getElementById('client-existant');
-  const nouveau = document.getElementById('nouveau-client');
-
-  function toggle() {
-    if (cb.checked) {
-      existant.style.display = 'none';
-      nouveau.style.display = 'block';
-    } else {
-      existant.style.display = 'block';
-      nouveau.style.display = 'none';
-    }
+document.addEventListener('DOMContentLoaded', function () {
+  var cb = document.getElementById('{{ form.nouveau_client.id_for_label }}');
+  var existing = document.getElementById('client-existant');
+  var fresh = document.getElementById('nouveau-client');
+  function syncClientMode() {
+    var createNew = cb && cb.checked;
+    existing.hidden = createNew;
+    fresh.hidden = !createNew;
   }
-  cb.addEventListener('change', toggle);
-  toggle();
+  if (cb) cb.addEventListener('change', syncClientMode);
+  syncClientMode();
 });
 </script>
 {% endblock %}

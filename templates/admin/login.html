@@ -2,315 +2,39 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Connexion Admin — Hôtel Citadel{% endblock %}</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
-            background: linear-gradient(135deg, #867050 0%, #795548 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            letter-spacing: 0.3px;
-            line-height: 1.6;
-        }
-
-        .login-container {
-            width: 100%;
-            max-width: 420px;
-            padding: 40px;
-        }
-
-        .login-card {
-            background: white;
-            border-radius: 16px;
-            padding: 50px 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .login-logo {
-            width: 70px;
-            height: 70px;
-            margin: 0 auto 20px;
-            background: linear-gradient(135deg, #867050 0%, #795548 100%);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            box-shadow: 0 8px 20px rgba(134, 112, 80, 0.25);
-        }
-
-        .login-header h1 {
-            color: #2d2d2d;
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            letter-spacing: -0.3px;
-        }
-
-        .login-header p {
-            color: #888;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
-        }
-
-        .login-form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .form-group label {
-            font-weight: 600;
-            color: #3d3d3d;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .form-group label i {
-            color: #867050;
-            font-size: 14px;
-        }
-
-        .form-group input[type="text"],
-        .form-group input[type="password"] {
-            padding: 14px 16px;
-            border: 1.5px solid #ddd5cb;
-            border-radius: 10px;
-            font-size: 14px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background: #f8f7f5;
-            font-family: inherit;
-            letter-spacing: 0.2px;
-        }
-
-        .form-group input[type="text"]:focus,
-        .form-group input[type="password"]:focus {
-            outline: none;
-            border-color: #867050;
-            box-shadow: 0 0 0 4px rgba(134, 112, 80, 0.12);
-            background: white;
-        }
-
-        .login-submit {
-            padding: 14px 24px;
-            background: linear-gradient(135deg, #867050 0%, #795548 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 8px 20px rgba(134, 112, 80, 0.3);
-            margin-top: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .login-submit:hover {
-            background: linear-gradient(135deg, #795548 0%, #704838 100%);
-            box-shadow: 0 12px 32px rgba(134, 112, 80, 0.4);
-            transform: translateY(-2px);
-        }
-
-        .login-submit i {
-            font-size: 15px;
-        }
-
-        .errorlist {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 20px 0;
-        }
-
-        .errorlist li {
-            background: linear-gradient(135deg, #ffebee 0%, #fdf8f7 100%);
-            color: #c62828;
-            padding: 12px 16px;
-            border-left: 4px solid #ef5350;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .errorlist li:before {
-            content: '⚠️';
-            font-size: 16px;
-        }
-
-        .login-footer {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 24px;
-            border-top: 1px solid #e8e8e8;
-            color: #888;
-            font-size: 12px;
-        }
-
-        .login-footer a {
-            color: #867050;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border-bottom: 1px solid rgba(134, 112, 80, 0.3);
-        }
-
-        .login-footer a:hover {
-            border-bottom-color: #867050;
-            opacity: 0.8;
-        }
-
-        /* Django admin specific styles */
-        #id_username,
-        #id_password {
-            width: 100%;
-        }
-
-        .submit-row {
-            margin-top: 20px;
-        }
-
-        .submit-row input[type="submit"] {
-            width: 100%;
-        }
-
-        /* Messages */
-        .messagelist {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 20px 0;
-        }
-
-        .messagelist li {
-            background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f6 100%);
-            color: #2e7d32;
-            padding: 12px 16px;
-            border-left: 4px solid #66bb6a;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            font-weight: 500;
-        }
-
-        /* Responsive */
-        @media (max-width: 480px) {
-            .login-container {
-                padding: 20px;
-            }
-
-            .login-card {
-                padding: 30px 24px;
-            }
-
-            .login-header h1 {
-                font-size: 24px;
-            }
-
-            .login-logo {
-                width: 60px;
-                height: 60px;
-                font-size: 32px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion | Hotel Citadel</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'app.css' %}?v=10">
 </head>
-<body>
-    <div class="login-container">
-        <div class="login-card">
-            <div class="login-header">
-                <div class="login-logo">
-                    <i class="fas fa-lock"></i>
-                </div>
-                <h1>Admin</h1>
-                <p>Hôtel Citadel</p>
-            </div>
+<body class="hc-login-body">
+  <main class="hc-login">
+    <section class="hc-login-card">
+      <div class="hc-login-mark"><i class="fas fa-lock"></i></div>
+      <h1>Connexion admin</h1>
+      <p>Hotel Citadel</p>
 
-            {% if form.errors %}
-                <div class="errorlist">
-                    {% if form.non_field_errors %}
-                        {% for error in form.non_field_errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-            {% endif %}
+      {% if form.errors %}
+        <div class="hc-alert hc-alert-error">Identifiants invalides. Verifiez le nom d'utilisateur et le mot de passe.</div>
+      {% endif %}
 
-            {% if messages %}
-                <div class="messagelist">
-                    {% for message in messages %}
-                        <li>{{ message }}</li>
-                    {% endfor %}
-                </div>
-            {% endif %}
-
-            <form method="post" class="login-form">
-                {% csrf_token %}
-                
-                <div class="form-group">
-                    <label for="id_username">
-                        <i class="fas fa-user"></i> Nom d'utilisateur
-                    </label>
-                    {{ form.username }}
-                </div>
-
-                <div class="form-group">
-                    <label for="id_password">
-                        <i class="fas fa-key"></i> Mot de passe
-                    </label>
-                    {{ form.password }}
-                </div>
-
-                <div class="submit-row">
-                    <button type="submit" class="login-submit">
-                        <i class="fas fa-sign-in-alt"></i> Se connecter
-                    </button>
-                </div>
-            </form>
-
-            <div class="login-footer">
-                <p>Interface d'administration sécurisée</p>
-            </div>
+      <form method="post" class="hc-form">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next|default:'/admin/' }}">
+        <div class="hc-field">
+          <label for="{{ form.username.id_for_label }}">Nom d'utilisateur</label>
+          {{ form.username }}
         </div>
-    </div>
+        <div class="hc-field">
+          <label for="{{ form.password.id_for_label }}">Mot de passe</label>
+          {{ form.password }}
+        </div>
+        <button type="submit" class="hc-btn hc-btn-primary hc-btn-block">
+          <i class="fas fa-right-to-bracket"></i> Se connecter
+        </button>
+      </form>
+    </section>
+  </main>
 </body>
 </html>

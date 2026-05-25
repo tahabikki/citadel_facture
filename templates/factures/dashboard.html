@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard | Hotel Citadel{% endblock %}
+{% block page_title %}Tableau de bord{% endblock %}
+
+{% block content %}
+<section class="hc-stats-grid">
+  <article class="hc-stat">
+    <span><i class="fas fa-file-invoice"></i></span>
+    <strong>{{ total_factures }}</strong>
+    <p>Factures</p>
+  </article>
+  <article class="hc-stat">
+    <span><i class="fas fa-users"></i></span>
+    <strong>{{ total_clients }}</strong>
+    <p>Clients</p>
+  </article>
+</section>
+
+<section class="hc-panel">
+  <div class="hc-panel-head">
+    <div>
+      <h2>Factures recentes</h2>
+      <p>Derniers documents crees dans le systeme.</p>
+    </div>
+    <a href="{% url 'facture_create' %}" class="hc-btn hc-btn-primary"><i class="fas fa-plus"></i> Nouvelle facture</a>
+  </div>
+
+  <div class="hc-table-wrap">
+    <table class="hc-table">
+      <thead>
+        <tr>
+          <th>N resa</th>
+          <th>Client</th>
+          <th>Statut</th>
+          <th class="hc-num">Total TTC</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for f in recent_factures %}
+          <tr>
+            <td><strong>{{ f.numero_reservation }}</strong></td>
+            <td>{{ f.client }}</td>
+            <td><span class="hc-badge hc-badge-{{ f.statut|lower }}">{{ f.get_statut_display }}</span></td>
+            <td class="hc-num">{{ f.total_ttc }} EUR</td>
+            <td class="hc-actions">
+              <a href="{% url 'facture_detail' f.pk %}" title="Voir"><i class="fas fa-eye"></i></a>
+              <a href="{% url 'facture_update' f.pk %}" title="Modifier"><i class="fas fa-pen"></i></a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="hc-empty">Aucune facture pour le moment.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
