@@ -1,5 +1,7 @@
 """Formulaires Django."""
+from datetime import date
 from django import forms
+from django.utils import timezone
 from .models import Facture, Client
 
 
@@ -64,6 +66,11 @@ class FactureForm(forms.ModelForm):
         # Cohérence dates
         da = cleaned.get('date_arrivee')
         dd = cleaned.get('date_depart')
+        today = timezone.localdate()
+        if da and da < today:
+            self.add_error('date_arrivee', "La date d'arrivée ne peut pas être dans le passé.")
+        if dd and dd < today:
+            self.add_error('date_depart', "La date de départ ne peut pas être dans le passé.")
         if da and dd and dd <= da:
             raise forms.ValidationError('La date de départ doit être postérieure à l\'arrivée.')
 

@@ -6,9 +6,34 @@ from django.http import HttpResponse
 from django.db.models import Q
 from django.utils import timezone
 
-from .models import Facture
+from .models import Facture, Client
 from .forms import FactureForm
 from .pdf_generator import generer_pdf_facture
+
+
+class ClientListView(ListView):
+    """Liste des clients avec recherche."""
+    model = Client
+    template_name = 'factures/clients_liste.html'
+    context_object_name = 'clients'
+    paginate_by = 50
+
+    def get_queryset(self):
+        qs = Client.objects.all()
+        q = self.request.GET.get('q', '').strip()
+        if q:
+            qs = qs.filter(
+                Q(nom__icontains=q) |
+                Q(prenom__icontains=q) |
+                Q(email__icontains=q) |
+                Q(telephone__icontains=q)
+            )
+        return qs.order_by('nom', 'prenom')
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['q'] = self.request.GET.get('q', '')
+        return ctx
 
 
 class FactureListView(ListView):

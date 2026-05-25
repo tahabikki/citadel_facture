@@ -5,15 +5,38 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Hôtel Citadel{% endblock %}</title>
-  <link rel="stylesheet" href="{% static 'app.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'app.css' %}?v=4">
+  <style>
+    html { 
+      scroll-behavior: smooth; 
+    }
+    /* Icon Premium Styling */
+    .icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .icon-sm { font-size: 18px; }
+    .icon-md { font-size: 24px; }
+    .icon-lg { font-size: 32px; }
+    /* Smooth transitions for all interactive elements */
+    a, button, input, select, textarea {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  </style>
 </head>
 <body>
 
 <header class="navbar">
   <div class="nav-inner">
-    <a href="{% url 'facture_liste' %}" class="brand">🏨 Hôtel Citadel</a>
+    <a href="{% url 'facture_liste' %}" class="brand">
+      <img src="{% static 'white_logo.png' %}" alt="Hôtel Citadel" class="nav-logo">
+    </a>
     <nav>
       <a href="{% url 'facture_liste' %}">Factures</a>
+      <a href="{% url 'clients_liste' %}">Clients</a>
       <a href="{% url 'facture_create' %}">+ Nouvelle facture</a>
       <a href="/admin/" target="_blank">Admin</a>
     </nav>
@@ -36,5 +59,6 @@
   <small>Hôtel Citadel — Gestion locale des factures</small>
 </footer>
 
+<script src="{% static 'app.js' %}"></script>
 </body>
 </html>

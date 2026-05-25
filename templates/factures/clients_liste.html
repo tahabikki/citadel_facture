@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Clients | Hôtel Citadel{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1><i class="fas fa-address-book"></i> Carnet de clients</h1>
+  <div class="actions-bar">
+    <a href="/admin/factures/client/add/" class="btn btn-primary"><i class="fas fa-user-plus"></i> Ajouter un client</a>
+  </div>
+</div>
+
+<!-- Search Bar -->
+<div class="search-bar">
+  <form method="get" style="display: flex; gap: 10px; flex: 1;">
+    <input type="text" name="q" placeholder="Chercher par nom, email ou téléphone..." value="{{ q }}">
+    <button type="submit" class="btn btn-primary" style="padding: 10px 24px; min-width: 120px;"><i class="fas fa-search"></i> Chercher</button>
+    {% if q %}<a href="{% url 'clients_liste' %}" class="btn" style="padding: 10px 20px;"><i class="fas fa-times"></i> Réinitialiser</a>{% endif %}
+  </form>
+</div>
+
+<!-- Stats -->
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="stat-number">{{ clients|length }}</div>
+    <div class="stat-label">Clients {% if q %}trouvés{% else %}total{% endif %}</div>
+  </div>
+</div>
+
+<!-- Clients Table -->
+<div class="card">
+  {% if clients %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th><i class="fas fa-user"></i> Civilité & Nom</th>
+          <th><i class="fas fa-phone"></i> Téléphone</th>
+          <th><i class="fas fa-envelope"></i> Email</th>
+          <th><i class="fas fa-file-invoice"></i> Factures</th>
+          <th><i class="fas fa-cog"></i> Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for client in clients %}
+          <tr>
+            <td class="client-col">
+              <strong>{{ client.get_civilite_display }}</strong><br>
+              <span class="client-name">{{ client.nom|upper }} {{ client.prenom }}</span>
+            <td>
+              {% if client.telephone %}
+                <a href="tel:{{ client.telephone }}" class="phone-link"><i class="fas fa-phone-alt"></i> {{ client.telephone }}</a>
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if client.email %}
+                <a href="mailto:{{ client.email }}" class="email-link"><i class="fas fa-envelope"></i> {{ client.email }}</a>
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+            <td class="text-center">
+              <span class="badge badge-info">{{ client.factures.count }} facture{{ client.factures.count|pluralize }}</span>
+            </td>
+            <td class="actions">
+              <a href="/admin/factures/client/{{ client.pk }}/change/" title="Modifier" class="action-icon"><i class="fas fa-edit"></i></a>
+              <a href="/admin/factures/client/{{ client.pk }}/delete/" title="Supprimer" class="action-icon action-danger"><i class="fas fa-trash-alt"></i></a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-icon"><i class="fas fa-inbox"></i></div>
+      <h3>Aucun client trouvé</h3>
+      <p>{% if q %}Aucun résultat pour votre recherche. Essayez d'autres mots-clés.{% else %}Commencez par <a href="/admin/factures/client/add/">ajouter un client</a>.{% endif %}</p>
+    </div>
+  {% endif %}
+</div>
+
+<!-- Pagination -->
+{% if is_paginated %}
+  <div class="pagination">
+    {% if page_obj.has_previous %}
+      <a href="?page=1{% if q %}&q={{ q }}{% endif %}">« Première</a>
+      <a href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}">‹ Précédente</a>
+    {% endif %}
+
+    <span class="pagination-info">
+      Page <strong>{{ page_obj.number }}</strong> sur <strong>{{ page_obj.paginator.num_pages }}</strong>
+    </span>
+
+    {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}">Suivante ›</a>
+      <a href="?page={{ page_obj.paginator.num_pages }}{% if q %}&q={{ q }}{% endif %}">Dernière »</a>
+    {% endif %}
+  </div>
+{% endif %}
+
+<style>
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+
+  .stat-card {
+    background: linear-gradient(135deg, #D39B34 0%, #b8892e 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 6px 12px rgba(211, 155, 52, 0.2);
+    transition: transform 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(211, 155, 52, 0.3);
+  }
+
+  .stat-number {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .stat-label {
+    font-size: 13px;
+    opacity: 0.95;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .client-col {
+    font-weight: 600;
+  }
+
+  .client-name {
+    font-size: 13px;
+    color: #666;
+  }
+
+  .phone-link, .email-link {
+    color: #D39B34;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+
+  .phone-link:hover, .email-link:hover {
+    color: #b8892e;
+    text-decoration: underline;
+  }
+
+  .text-muted {
+    color: #ccc;
+    font-style: italic;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .badge-info {
+    background: #cce5ff;
+    color: #004085;
+    border: 1px solid #0066cc;
+  }
+
+  .action-icon {
+    font-size: 18px;
+    margin-right: 10px;
+    text-decoration: none;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+    cursor: pointer;
+  }
+
+  .action-icon:hover {
+    opacity: 1;
+  }
+
+  .action-icon.action-danger:hover {
+    color: #dc3545;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 40px;
+    color: #999;
+  }
+
+  .empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  .empty-state h3 {
+    margin: 16px 0 8px;
+    color: #666;
+    font-size: 20px;
+  }
+
+  .empty-state p {
+    margin: 0;
+    color: #999;
+  }
+
+  .empty-state a {
+    color: #D39B34;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .empty-state a:hover {
+    text-decoration: underline;
+  }
+
+  .pagination-info {
+    font-size: 14px;
+    color: #666;
+  }
+</style>
+{% endblock %}

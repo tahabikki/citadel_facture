@@ -4,13 +4,13 @@
 
 {% block content %}
 <div class="page-header">
-  <h1>Facture n°{{ facture.numero_reservation }}</h1>
+  <h1><i class="fas fa-receipt"></i> Facture n°{{ facture.numero_reservation }}</h1>
   <div class="actions-bar">
-    <a href="{% url 'facture_liste' %}" class="btn btn-secondary">← Liste</a>
-    <a href="{% url 'facture_update' facture.pk %}" class="btn">✏️ Modifier</a>
-    <a href="{% url 'facture_pdf' facture.pk %}" target="_blank" class="btn btn-primary">📄 Voir le PDF</a>
-    <a href="{% url 'facture_pdf' facture.pk %}?disposition=attachment" class="btn btn-primary">⬇️ Télécharger PDF</a>
-    <a href="{% url 'facture_delete' facture.pk %}" class="btn btn-danger">🗑️ Supprimer</a>
+    <a href="{% url 'facture_liste' %}" class="btn btn-secondary"><i class="fas fa-list"></i> Liste</a>
+    <a href="{% url 'facture_update' facture.pk %}" class="btn"><i class="fas fa-edit"></i> Modifier</a>
+    <a href="{% url 'facture_pdf' facture.pk %}" target="_blank" class="btn btn-primary"><i class="fas fa-file-pdf"></i> Voir le PDF</a>
+    <a href="{% url 'facture_pdf' facture.pk %}?disposition=attachment" class="btn btn-primary"><i class="fas fa-download"></i> Télécharger PDF</a>
+    <a href="{% url 'facture_delete' facture.pk %}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Supprimer</a>
   </div>
 </div>
 

@@ -4,8 +4,8 @@
 
 {% block content %}
 <div class="page-header">
-  <h1>Factures</h1>
-  <a href="{% url 'facture_create' %}" class="btn btn-primary">+ Nouvelle facture</a>
+  <h1><i class="fas fa-receipt"></i> Factures</h1>
+  <a href="{% url 'facture_create' %}" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Nouvelle facture</a>
 </div>
 
 <form method="get" class="search-bar">
@@ -16,9 +16,9 @@
       <option value="{{ value }}" {% if value == statut %}selected{% endif %}>{{ label }}</option>
     {% endfor %}
   </select>
-  <button type="submit" class="btn">Filtrer</button>
+  <button type="submit" class="btn"><i class="fas fa-filter"></i> Filtrer</button>
   {% if q or statut %}
-    <a href="{% url 'facture_liste' %}" class="btn btn-secondary">Réinitialiser</a>
+    <a href="{% url 'facture_liste' %}" class="btn btn-secondary"><i class="fas fa-redo"></i> Réinitialiser</a>
   {% endif %}
 </form>
 
@@ -51,10 +51,10 @@
           </td>
           <td class="num">{{ f.total_ttc }} €</td>
           <td class="actions">
-            <a href="{% url 'facture_detail' f.pk %}" title="Voir">👁️</a>
-            <a href="{% url 'facture_update' f.pk %}" title="Modifier">✏️</a>
-            <a href="{% url 'facture_pdf' f.pk %}" target="_blank" title="PDF">📄</a>
-            <a href="{% url 'facture_delete' f.pk %}" title="Supprimer" class="danger">🗑️</a>
+            <a href="{% url 'facture_detail' f.pk %}" title="Voir" class="action-btn"><i class="fas fa-eye"></i></a>
+            <a href="{% url 'facture_update' f.pk %}" title="Modifier" class="action-btn"><i class="fas fa-edit"></i></a>
+            <a href="{% url 'facture_pdf' f.pk %}" target="_blank" title="PDF" class="action-btn"><i class="fas fa-file-pdf"></i></a>
+            <a href="{% url 'facture_delete' f.pk %}" title="Supprimer" class="action-btn danger"><i class="fas fa-trash-alt"></i></a>
           </td>
         </tr>
       {% empty %}
@@ -72,11 +72,11 @@
 {% if is_paginated %}
   <div class="pagination">
     {% if page_obj.has_previous %}
-      <a href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}">← Précédent</a>
+      <a href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}"><i class="fas fa-chevron-left"></i> Précédent</a>
     {% endif %}
     <span>Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
     {% if page_obj.has_next %}
-      <a href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}">Suivant →</a>
+      <a href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}">Suivant <i class="fas fa-chevron-right"></i></a>
     {% endif %}
   </div>
 {% endif %}

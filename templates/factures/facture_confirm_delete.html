@@ -3,8 +3,8 @@
 {% block title %}Supprimer facture n°{{ facture.numero_reservation }}{% endblock %}
 
 {% block content %}
-<div class="card">
-  <h1>⚠️ Confirmer la suppression</h1>
+<div class="card" style="border-left: 4px solid #e8605f;">
+  <h1><i class="fas fa-exclamation-triangle" style="color: #e8605f; margin-right: 12px;"></i> Confirmer la suppression</h1>
   <p>
     Es-tu sûr de vouloir supprimer la facture
     <strong>n°{{ facture.numero_reservation }}</strong>
@@ -15,8 +15,8 @@
   <form method="post">
     {% csrf_token %}
     <div class="form-actions">
-      <a href="{% url 'facture_detail' facture.pk %}" class="btn btn-secondary">Annuler</a>
-      <button type="submit" class="btn btn-danger">🗑️ Confirmer la suppression</button>
+      <a href="{% url 'facture_detail' facture.pk %}" class="btn btn-secondary"><i class="fas fa-times"></i> Annuler</a>
+      <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Confirmer la suppression</button>
     </div>
   </form>
 </div>

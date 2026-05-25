@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     path('', views.FactureListView.as_view(), name='facture_liste'),
+    path('clients/', views.ClientListView.as_view(), name='clients_liste'),
     path('facture/nouvelle/', views.facture_create, name='facture_create'),
     path('facture/<int:pk>/', views.facture_detail, name='facture_detail'),
     path('facture/<int:pk>/modifier/', views.facture_update, name='facture_update'),
