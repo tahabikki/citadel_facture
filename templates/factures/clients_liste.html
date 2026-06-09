@@ -7,8 +7,8 @@
 <section class="hc-panel">
   <div class="hc-panel-head">
     <div>
-      <h2>Carnet de clients</h2>
-      <p>Coordonnees, civilite, societe et historique de facturation.</p>
+      <h2>Gestion des clients</h2>
+      <p>Recherche, consultation et modification des fiches clients.</p>
     </div>
     <a href="{% url 'client_create' %}" class="hc-btn hc-btn-primary"><i class="fas fa-user-plus"></i> Nouveau client</a>
   </div>
@@ -16,7 +16,7 @@
   <form method="get" class="hc-filterbar">
     <input type="text" name="q" value="{{ q }}" placeholder="Rechercher par nom, email ou telephone">
     <button type="submit" class="hc-btn"><i class="fas fa-search"></i> Chercher</button>
-    {% if q %}<a href="{% url 'clients_liste' %}" class="hc-btn hc-btn-muted"><i class="fas fa-xmark"></i> Reset</a>{% endif %}
+    {% if q %}<a href="{% url 'clients_liste' %}" class="hc-btn hc-btn-muted"><i class="fas fa-rotate-left"></i> Reset</a>{% endif %}
   </form>
 
   <div class="hc-table-wrap">
@@ -24,7 +24,6 @@
       <thead>
         <tr>
           <th>Civilite & nom</th>
-          <th>Societe</th>
           <th>Telephone</th>
           <th>Email</th>
           <th>Factures</th>
@@ -34,10 +33,9 @@
       <tbody>
         {% for client in clients %}
           <tr>
-            <td><strong>{{ client.get_civilite_display }}</strong><br><span>{{ client.nom|upper }} {{ client.prenom }}</span></td>
-            <td>{{ client.societe|default:"-" }}</td>
-            <td>{% if client.telephone %}<a href="tel:{{ client.telephone }}">{{ client.telephone }}</a>{% else %}-{% endif %}</td>
-            <td>{% if client.email %}<a href="mailto:{{ client.email }}">{{ client.email }}</a>{% else %}-{% endif %}</td>
+            <td><strong>{{ client.civilite_abrev }} {{ client.nom|upper }} {{ client.prenom }}</strong></td>
+            <td>{{ client.telephone|default:"-" }}</td>
+            <td>{{ client.email|default:"-" }}</td>
             <td><span class="hc-badge">{{ client.factures.count }}</span></td>
             <td class="hc-actions">
               <a href="{% url 'client_update' client.pk %}" title="Modifier"><i class="fas fa-pen"></i></a>
@@ -45,7 +43,7 @@
             </td>
           </tr>
         {% empty %}
-          <tr><td colspan="6" class="hc-empty">Aucun client trouve.</td></tr>
+          <tr><td colspan="5" class="hc-empty">Aucun client trouve.</td></tr>
         {% endfor %}
       </tbody>
     </table>

@@ -15,4 +15,8 @@ urlpatterns = [
     path('facture/<int:pk>/modifier/', views.facture_update, name='facture_update'),
     path('facture/<int:pk>/supprimer/', views.facture_delete, name='facture_delete'),
     path('facture/<int:pk>/pdf/', views.facture_pdf, name='facture_pdf'),
+
+    path('bilan/', views.bilan, name='bilan'),
+    path('export/csv/', views.export_csv, name='export_csv'),
+    path('export/pdf/', views.export_pdf, name='export_pdf'),
 ]

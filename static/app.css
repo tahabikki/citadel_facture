@@ -254,6 +254,7 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
   margin-bottom: 22px;
+  margin-top: 22px,;
 }
 
 .hc-stat {
@@ -615,4 +616,150 @@
   .hc-pagination {
     grid-template-columns: 1fr;
   }
+
+  .hc-modal-grid,
+  .hc-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* === MODAL === */
+.hc-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(4px);
+}
+
+.hc-modal {
+  width: min(520px, calc(100vw - 32px));
+  max-height: 80vh;
+  overflow-y: auto;
+  border-radius: 8px;
+  padding: 28px;
+  background: #fff;
+  box-shadow: 0 18px 50px rgba(31,41,51,0.2);
+}
+
+.hc-modal h2 {
+  margin: 0 0 6px;
+}
+
+.hc-modal .hc-form-actions {
+  margin-top: 20px;
+}
+
+/* === PAYMENT RADIOS === */
+.hc-payment-radio {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border: 1px solid rgba(31,41,51,0.12);
+  border-radius: 8px;
+  cursor: pointer;
+  background: rgba(255,255,255,0.6);
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.hc-payment-radio:hover {
+  background: rgba(134,112,80,0.08);
+  border-color: #867050;
+}
+
+.hc-payment-radio input:checked + span {
+  color: #867050;
+  font-weight: 800;
+}
+
+.hc-payment-radio:has(input:checked) {
+  border-color: #867050;
+  background: rgba(134,112,80,0.1);
+}
+
+/* === GRID HELPERS === */
+.hc-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.hc-choice-row {
+  margin-bottom: 12px;
+}
+
+/* === CHECKBOX GRID === */
+.hc-checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.hc-checkbox-grid label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+/* === MODAL HEAD/BODY/ACTIONS === */
+.hc-modal-head {
+  margin-bottom: 20px;
+}
+.hc-modal-head h3 {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+.hc-modal-head p {
+  margin: 0;
+  color: #667788;
+  font-size: 14px;
+}
+.hc-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.hc-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+/* === RADIO ROWS === */
+.hc-radio {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border: 1px solid rgba(31,41,51,0.12);
+  border-radius: 8px;
+  cursor: pointer;
+  background: rgba(255,255,255,0.6);
+  transition: background 0.15s, border-color 0.15s;
+  font-size: 15px;
+}
+.hc-radio:hover {
+  background: rgba(134,112,80,0.08);
+  border-color: rgba(134,112,80,0.3);
+}
+.hc-radio input[type="radio"] {
+  accent-color: #867050;
+  width: 18px;
+  height: 18px;
+}
+
+/* === READ-ONLY INPUT === */
+.hc-input-readonly {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(31,41,51,0.12);
+  border-radius: 6px;
+  background: #f4f5f7;
+  color: #334455;
+  font-size: 14px;
 }

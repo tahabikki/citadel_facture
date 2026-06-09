@@ -21,7 +21,7 @@
   }
 
   [arrival, departure].forEach(function (input) {
-    if (input) input.setAttribute('min', getToday());
+    if (input) input.removeAttribute('min');
   });
 
   function showError(input, msg) {
@@ -48,11 +48,21 @@
     if (!arrival || !departure) return;
     clearError(arrival);
     clearError(departure);
-    if (arrival.value && arrival.value < getToday()) showError(arrival, "La date d'arrivee ne peut pas etre dans le passe.");
-    if (departure.value && departure.value < getToday()) showError(departure, "La date de depart ne peut pas etre dans le passe.");
     if (arrival.value && departure.value && departure.value <= arrival.value) showError(departure, "Le depart doit etre apres l'arrivee.");
   }
 
   if (arrival) arrival.addEventListener('change', validateDates);
   if (departure) departure.addEventListener('change', validateDates);
+
+  var factureForm = arrival && arrival.closest('form');
+  if (factureForm) {
+    factureForm.addEventListener('submit', function (event) {
+      if (arrival.value && arrival.value < getToday()) {
+        var confirmed = window.confirm(
+          "La date d'arrivee choisie est anterieure a aujourd'hui. Voulez-vous continuer ?"
+        );
+        if (!confirmed) event.preventDefault();
+      }
+    });
+  }
 })();

@@ -37,6 +37,7 @@
           <th>Depart</th>
           <th>Nuits</th>
           <th>Statut</th>
+          <th>Paiement</th>
           <th class="hc-num">Total TTC</th>
           <th>Actions</th>
         </tr>
@@ -50,6 +51,7 @@
             <td>{{ f.date_depart|date:"d/m/Y" }}</td>
             <td>{{ f.nombre_nuits }}</td>
             <td><span class="hc-badge hc-badge-{{ f.statut|lower }}">{{ f.get_statut_display }}</span></td>
+            <td>{{ f.get_moyen_paiement_display|default:"-" }}</td>
             <td class="hc-num">{{ f.total_ttc }} EUR</td>
             <td class="hc-actions">
               <a href="{% url 'facture_detail' f.pk %}" title="Voir / scanner"><i class="fas fa-eye"></i></a>
@@ -60,7 +62,7 @@
             </td>
           </tr>
         {% empty %}
-          <tr><td colspan="8" class="hc-empty">Aucune facture trouvee.</td></tr>
+          <tr><td colspan="9" class="hc-empty">Aucune facture trouvee.</td></tr>
         {% endfor %}
       </tbody>
     </table>

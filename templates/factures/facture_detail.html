@@ -32,10 +32,15 @@
         <p>Reservation n {{ facture.numero_reservation }}</p>
         <p>Arrivee : {{ facture.date_arrivee|date:"d/m/Y" }}</p>
         <p>Depart : {{ facture.date_depart|date:"d/m/Y" }}</p>
+        <p>Nuits : {{ facture.nombre_nuits }}</p>
+        <p>Personnes : {{ facture.nombre_personnes }}</p>
       </div>
-      <div>
+      <div style="text-align:right">
         <p>Editee le {{ facture.date_edition|date:"d/m/Y" }}</p>
         <strong>{{ facture.client.nom_complet_majuscule }}</strong>
+          {% if facture.moyen_paiement %}
+            <p>Paiement : {{ facture.get_moyen_paiement_display }}</p>
+          {% endif %}
       </div>
     </div>
 
@@ -60,12 +65,48 @@
               <td class="hc-num">{{ facture.prix_chambre_ttc_par_nuit }} EUR</td>
             </tr>
           {% endfor %}
-          <tr><td colspan="3" class="hc-num"><strong>Total</strong></td><td class="hc-num">{{ facture.total_taxe_sejour }} EUR</td><td class="hc-num">{{ facture.total_chambre }} EUR</td></tr>
-          <tr><td colspan="4" class="hc-num">Total extra(s)</td><td class="hc-num">{{ facture.extras }} EUR</td></tr>
-          <tr><td colspan="4" class="hc-num">Total hotel</td><td class="hc-num">{{ facture.total_hotel }} EUR</td></tr>
-          <tr><td colspan="4" class="hc-num"><strong>Total TTC</strong></td><td class="hc-num"><strong>{{ facture.total_ttc }} EUR</strong></td></tr>
-          <tr><td colspan="4" class="hc-num">dont TVA {{ facture.taux_tva }}%</td><td class="hc-num">{{ facture.total_tva }} EUR</td></tr>
-          <tr><td colspan="4" class="hc-num"><strong>Reste du</strong></td><td class="hc-num"><strong>{{ facture.reste_du }} EUR</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    {% if extras %}
+    <div style="margin-top:16px">
+      <h4 style="margin:0 0 8px">Extras / Services supplémentaires</h4>
+      <div class="hc-table-wrap">
+        <table class="hc-invoice-table">
+          <thead>
+            <tr>
+              <th>Service</th>
+              <th class="hc-num">Quantité</th>
+              <th class="hc-num">Prix unitaire</th>
+              <th class="hc-num">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for e in extras %}
+            <tr>
+              <td>{{ e.extra.nom }}</td>
+              <td class="hc-num">{{ e.quantite }}</td>
+              <td class="hc-num">{{ e.prix_unitaire }} EUR</td>
+              <td class="hc-num">{{ e.total_price }} EUR</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="hc-table-wrap" style="margin-top:10px">
+      <table class="hc-invoice-table">
+        <tbody>
+          <tr><td class="hc-num"><strong>Montant séjour HT</strong></td><td class="hc-num"><strong>{{ facture.montant_sejour_ht }} EUR</strong></td></tr>
+          <tr><td class="hc-num">Total extras</td><td class="hc-num">{{ facture.total_extras_calcule }} EUR</td></tr>
+          <tr><td class="hc-num"><strong>Total HT</strong></td><td class="hc-num"><strong>{{ facture.montant_ht }} EUR</strong></td></tr>
+          <tr><td class="hc-num">TVA ({{ facture.taux_tva }}%)</td><td class="hc-num">{{ facture.montant_tva }} EUR</td></tr>
+          <tr><td class="hc-num">Taxe sejour ({{ facture.taux_taxe_sejour }}%)</td><td class="hc-num">{{ facture.montant_taxe_sejour }} EUR</td></tr>
+          <tr><td class="hc-num"><strong>Total TTC</strong></td><td class="hc-num"><strong>{{ facture.total_ttc }} EUR</strong></td></tr>
+          <tr><td class="hc-num"><strong>Reste du</strong></td><td class="hc-num"><strong>{{ facture.reste_du }} EUR</strong></td></tr>
         </tbody>
       </table>
     </div>

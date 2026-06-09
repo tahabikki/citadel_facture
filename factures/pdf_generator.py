@@ -69,11 +69,10 @@ def generer_pdf_facture(facture):
     c.drawString(20 * mm, y, f'Départ : {_date_fr(facture.date_depart)}')
     y -= 10 * mm
 
-    # === TABLEAU ===
+    # === TABLEAU SÉJOUR ===
     table_x = 20 * mm
     table_w = page_w - 40 * mm
 
-    # Colonnes : Date | Chb | (vide) | Pers. | (vide) | Occupant | Taxe séjour | Chambre
     col_widths = [
         25 * mm,  # Date
         15 * mm,  # Chb
@@ -84,7 +83,6 @@ def generer_pdf_facture(facture):
         25 * mm,  # Taxe séjour
         30 * mm,  # Chambre
     ]
-    # Total largeur ~170mm = bon
 
     def x_col(i):
         return table_x + sum(col_widths[:i])
@@ -106,11 +104,10 @@ def generer_pdf_facture(facture):
     c.setFont('Helvetica-Bold', 9)
     headers = ['Date', 'Chb', '', 'Pers.', '', 'Occupant', 'Taxe séjour', 'Chambre']
     for i, h in enumerate(headers):
-        # Lignes verticales
         if i > 0:
             c.line(x_col(i), y, x_col(i), y - row_h)
         if h:
-            if i >= 6:  # alignement droite pour montants
+            if i >= 6:
                 c.drawRightString(x_col(i) + col_widths[i] - 2 * mm, y - row_h + 2 * mm, h)
             else:
                 c.drawString(x_col(i) + 2 * mm, y - row_h + 2 * mm, h)
@@ -126,21 +123,15 @@ def generer_pdf_facture(facture):
         for i in range(1, len(col_widths)):
             c.line(x_col(i), y, x_col(i), y - row_h)
 
-        # Date
         c.drawString(x_col(0) + 2 * mm, y - row_h + 2 * mm, _date_fr(date_nuit))
-        # Chambre
         c.drawString(x_col(1) + 2 * mm, y - row_h + 2 * mm, str(facture.numero_chambre))
-        # Personnes
         c.drawString(x_col(3) + 2 * mm, y - row_h + 2 * mm, str(facture.nombre_personnes))
-        # Taxe séjour
         c.drawRightString(x_col(6) + col_widths[6] - 2 * mm, y - row_h + 2 * mm, _euro(taxe_par_nuit))
-        # Chambre TTC
         c.drawRightString(x_col(7) + col_widths[7] - 2 * mm, y - row_h + 2 * mm, _euro(prix_ttc_par_nuit))
 
         y -= row_h
 
-    # === TOTAUX ===
-    # On dessine des lignes sur les 2 dernières colonnes uniquement
+    # === TOTAUX SÉJOUR ===
     val_col_x = x_col(7)
     val_col_w = col_widths[7]
     taxe_col_x = x_col(6)
@@ -148,14 +139,12 @@ def generer_pdf_facture(facture):
 
     def ligne_total(label, val_chambre=None, val_taxe=None, bold=False):
         nonlocal y
-        # Cadre pour les 2 colonnes de droite uniquement
         if val_taxe is not None:
             c.rect(taxe_col_x, y - row_h, taxe_col_w, row_h, stroke=1, fill=0)
         if val_chambre is not None:
             c.rect(val_col_x, y - row_h, val_col_w, row_h, stroke=1, fill=0)
 
         c.setFont('Helvetica-Bold' if bold else 'Helvetica', 9)
-        # Label : à gauche de la colonne taxe
         c.drawRightString(taxe_col_x - 2 * mm, y - row_h + 2 * mm, label)
         if val_taxe is not None:
             c.drawRightString(taxe_col_x + taxe_col_w - 2 * mm, y - row_h + 2 * mm, _euro(val_taxe))
@@ -163,21 +152,88 @@ def generer_pdf_facture(facture):
             c.drawRightString(val_col_x + val_col_w - 2 * mm, y - row_h + 2 * mm, _euro(val_chambre))
         y -= row_h
 
-    ligne_total('Total', val_chambre=facture.total_chambre, val_taxe=facture.total_taxe_sejour, bold=True)
-    ligne_total('Total Extra(s)', val_chambre=facture.extras)
-    ligne_total('Total Hôtel', val_chambre=facture.total_hotel)
+    ligne_total('Total séjour', val_chambre=facture.total_chambre, val_taxe=facture.total_taxe_sejour, bold=True)
 
-    y -= 2 * mm  # petit espace
+    y -= 2 * mm
 
-    ligne_total('Total TTC', val_chambre=facture.total_ttc, bold=True)
-    ligne_total(f'dont TVA {facture.taux_tva}%', val_chambre=facture.total_tva)
-    ligne_total('Reste dû', val_chambre=facture.reste_du, bold=True)
+    # === SECTION EXTRAS ===
+    extras = list(facture.facture_extras.all())
+    if extras:
+        # Titre extras
+        c.setFont('Helvetica-BoldOblique', 10)
+        c.drawString(20 * mm, y, 'Extras / Services supplémentaires')
+        y -= row_h
+
+        # En-tête
+        c.setFont('Helvetica-Bold', 9)
+        ext_cols = [40 * mm, 20 * mm, 30 * mm, 30 * mm]
+        ext_x = 20 * mm
+        ext_headers = ['Description', 'Quantité', 'Prix unitaire', 'Total']
+        for i, (h, w) in enumerate(zip(ext_headers, ext_cols)):
+            if h in ('Prix unitaire', 'Total'):
+                c.drawRightString(ext_x + sum(ext_cols[:i+1]) - 2 * mm, y, h)
+            else:
+                c.drawString(ext_x + sum(ext_cols[:i]) + 2 * mm, y, h)
+        y -= row_h
+
+        # Données
+        c.setFont('Helvetica', 9)
+        for e in extras:
+            d = [e.extra.nom, str(e.quantite), _euro(e.prix_unitaire), _euro(e.total_price)]
+            for i, (val, w) in enumerate(zip(d, ext_cols)):
+                if i >= 2:
+                    c.drawRightString(ext_x + sum(ext_cols[:i+1]) - 2 * mm, y, val)
+                else:
+                    c.drawString(ext_x + sum(ext_cols[:i]) + 2 * mm, y, val)
+            y -= row_h
+        y -= 3 * mm
+
+    # === TOTAUX GÉNÉRAUX ===
+    c.setFont('Helvetica-Bold', 10)
+    c.drawString(20 * mm, y, 'Total HT séjour')
+    c.drawRightString(page_w - 20 * mm, y, _euro(facture.montant_sejour_ht))
+    y -= 6 * mm
+
+    if extras:
+        c.setFont('Helvetica', 10)
+        c.drawString(20 * mm, y, 'Total extras')
+        c.drawRightString(page_w - 20 * mm, y, _euro(facture.total_extras_calcule))
+        y -= 6 * mm
+
+    c.setFont('Helvetica-Bold', 10)
+    c.drawString(20 * mm, y, 'Total HT')
+    c.drawRightString(page_w - 20 * mm, y, _euro(facture.montant_ht))
+    y -= 6 * mm
+
+    c.setFont('Helvetica', 10)
+    c.drawString(20 * mm, y, f'TVA {facture.taux_tva}%')
+    c.drawRightString(page_w - 20 * mm, y, _euro(facture.montant_tva))
+    y -= 6 * mm
+
+    c.drawString(20 * mm, y, f'Taxe séjour {facture.taux_taxe_sejour}%')
+    c.drawRightString(page_w - 20 * mm, y, _euro(facture.montant_taxe_sejour))
+    y -= 8 * mm
+
+    c.setFont('Helvetica-Bold', 12)
+    c.drawString(20 * mm, y, 'Total TTC')
+    c.drawRightString(page_w - 20 * mm, y, _euro(facture.total_ttc))
+    y -= 8 * mm
+
+    c.setFont('Helvetica-Bold', 10)
+    c.drawString(20 * mm, y, 'Reste dû')
+    c.drawRightString(page_w - 20 * mm, y, _euro(facture.reste_du))
+
+    # === MOYEN DE PAIEMENT ===
+    if facture.moyen_paiement:
+        y -= 6 * mm
+        c.setFont('Helvetica', 10)
+        c.drawString(20 * mm, y, f'Paiement : {facture.get_moyen_paiement_display()}')
 
     # === PIED DE PAGE ===
     c.setFont('Helvetica', 9)
     c.drawCentredString(
         page_w / 2, 15 * mm,
-        f'{params.nom.upper()} {params.nom.lower()} Capital : {params.capital}'
+        f'{params.nom.upper()} Capital : {params.capital}'
     )
     c.drawCentredString(page_w / 2, 11 * mm, f'SIRET : {params.siret}')
 
