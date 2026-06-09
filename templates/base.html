@@ -6,14 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Hotel Citadel Admin{% endblock %}</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="{% static 'app.css' %}?v=11">
+  <link rel="stylesheet" href="{% static 'app.css' %}?v=12">
 </head>
 <body class="hc-admin-body">
-  <div class="hc-admin">
-    <aside class="hc-sidebar" aria-label="Navigation principale">
-      <a href="{% url 'dashboard' %}" class="hc-brand">
-        <img src="{% static 'assets/white_logo.png' %}" alt="Hotel Citadel">
-      </a>
+  <div class="hc-admin" id="hc-admin">
+    <div class="hc-sidebar-overlay" id="sidebar-overlay"></div>
+    <button class="hc-menu-toggle" id="menu-toggle" aria-label="Menu"><i class="fas fa-bars"></i></button>
+    <aside class="hc-sidebar" id="sidebar" aria-label="Navigation principale">
+      <div class="hc-brand">
+        <a href="{% url 'dashboard' %}"><img src="{% static 'assets/white_logo.png' %}" alt="Hotel Citadel"></a>
+        <button class="hc-sidebar-close" id="sidebar-close" aria-label="Fermer le menu"><i class="fas fa-xmark"></i></button>
+      </div>
 
       <nav class="hc-nav">
         <a href="{% url 'dashboard' %}" class="hc-nav-link {% if request.resolver_match.url_name == 'dashboard' %}is-active{% endif %}">
@@ -84,6 +87,6 @@
       </main>
     </div>
   </div>
-  <script src="{% static 'app.js' %}?v=5"></script>
+  <script src="{% static 'app.js' %}?v=6"></script>
 </body>
 </html>

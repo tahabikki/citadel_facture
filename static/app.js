@@ -65,4 +65,35 @@
       }
     });
   }
+
+  // Mobile sidebar toggle
+  var sidebar = document.getElementById('sidebar');
+  var overlay = document.getElementById('sidebar-overlay');
+  var menuToggle = document.getElementById('menu-toggle');
+  var sidebarClose = document.getElementById('sidebar-close');
+
+  function openSidebar() {
+    sidebar.classList.add('is-open');
+    if (overlay) overlay.classList.add('is-visible');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSidebar() {
+    sidebar.classList.remove('is-open');
+    if (overlay) overlay.classList.remove('is-visible');
+    document.body.style.overflow = '';
+  }
+
+  if (menuToggle) menuToggle.addEventListener('click', openSidebar);
+  if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
+  if (overlay) overlay.addEventListener('click', closeSidebar);
+
+  // Close sidebar on window resize (if goes desktop)
+  window.addEventListener('resize', function () {
+    if (window.innerWidth > 920 && sidebar) {
+      sidebar.classList.remove('is-open');
+      if (overlay) overlay.classList.remove('is-visible');
+      document.body.style.overflow = '';
+    }
+  });
 })();
