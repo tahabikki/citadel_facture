@@ -11,7 +11,6 @@
 <body class="hc-admin-body">
   <div class="hc-admin" id="hc-admin">
     <div class="hc-sidebar-overlay" id="sidebar-overlay"></div>
-    <button class="hc-menu-toggle" id="menu-toggle" aria-label="Menu"><i class="fas fa-bars"></i></button>
     <aside class="hc-sidebar" id="sidebar" aria-label="Navigation principale">
       <div class="hc-brand">
         <a href="{% url 'dashboard' %}"><img src="{% static 'assets/white_logo.png' %}" alt="Hotel Citadel"></a>
@@ -58,9 +57,12 @@
 
     <div class="hc-main">
       <header class="hc-topbar">
-        <div>
-          <p class="hc-eyebrow">Hotel Citadel</p>
-          <h1>{% block page_title %}Tableau de bord{% endblock %}</h1>
+        <div class="hc-topbar-start">
+          <button class="hc-menu-toggle" id="menu-toggle" aria-label="Menu"><i class="fas fa-bars"></i></button>
+          <div>
+            <p class="hc-eyebrow">Hotel Citadel</p>
+            <h1>{% block page_title %}Tableau de bord{% endblock %}</h1>
+          </div>
         </div>
         {% if user.is_authenticated %}
           <div class="hc-user-panel">

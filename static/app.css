@@ -622,21 +622,28 @@
 /* === MOBILE MENU TOGGLE === */
 .hc-menu-toggle {
   display: none;
-  position: fixed;
-  top: 14px;
-  left: 14px;
-  z-index: 100;
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   align-items: center;
   justify-content: center;
-  border: none;
+  flex-shrink: 0;
+  border: 1px solid rgba(31,41,51,0.12);
   border-radius: 8px;
-  background: #867050;
-  color: #fff;
-  font-size: 18px;
+  background: rgba(255,255,255,0.84);
+  color: #263442;
+  font-size: 16px;
   cursor: pointer;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  transition: background 0.15s ease;
+}
+
+.hc-menu-toggle:hover {
+  background: #eef2f5;
+}
+
+.hc-topbar-start {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .hc-sidebar-overlay {
@@ -734,11 +741,13 @@
 
   .hc-topbar {
     position: static;
-    align-items: flex-start;
-    flex-direction: column;
     min-height: 70px;
     padding-top: 14px;
     padding-bottom: 14px;
+  }
+
+  .hc-topbar-start {
+    flex: 1;
   }
 
   .hc-topbar h1 {
@@ -873,8 +882,8 @@
   .hc-topbar {
     padding-left: 14px;
     padding-right: 14px;
-    padding-top: 56px;
-    min-height: 96px;
+    padding-top: 14px;
+    min-height: 70px;
   }
 
   .hc-topbar h1 {
