@@ -556,7 +556,8 @@ def bilan(request):
 
     clients = Client.objects.all().order_by('nom', 'prenom')
 
-    return render(request, 'factures/bilan.html', {
+    template = 'factures/bilan_results.html' if request.GET.get('_ajax') else 'factures/bilan.html'
+    return render(request, template, {
         'params': params,
         'factures': qs,
         'total_ht': total_ht,
@@ -590,6 +591,7 @@ def export_pdf(request):
     date_fin = request.GET.get('date_fin', '')
     statut_filtre = request.GET.get('statut', '')
     paiement_filtre = request.GET.get('paiement', '')
+    client_filtre = request.GET.get('client', '')
 
     qs = Facture.objects.select_related('client')
     if date_debut:
@@ -600,29 +602,43 @@ def export_pdf(request):
         qs = qs.filter(statut=statut_filtre)
     if paiement_filtre:
         qs = qs.filter(moyen_paiement=paiement_filtre)
+    if client_filtre:
+        qs = qs.filter(client_id=client_filtre)
 
     buffer = BytesIO()
     c = canvas.Canvas(buffer, pagesize=A4)
     page_w, page_h = A4
 
-    y = page_h - 20 * mm
+    def _header(y):
+        c.setFont('Helvetica-Bold', 16)
+        c.drawCentredString(page_w / 2, y, params.nom)
+        y -= 8 * mm
+        c.setFont('Helvetica-Bold', 14)
+        c.drawCentredString(page_w / 2, y, '\u00c9tat financier')
+        y -= 8 * mm
+        c.setFont('Helvetica', 10)
+        today_str = "Aujourd'hui"
+        debut_str = "Début"
+        dash = "\u2014"
+        periode = f'Période: {date_debut or debut_str} {dash} {date_fin or today_str}'
+        c.drawCentredString(page_w / 2, y, periode)
+        y -= 8 * mm
+        edited_str = "Édité le"
+        c.drawCentredString(page_w / 2, y, f'{edited_str} {timezone.localdate().strftime("%d/%m/%Y")}')
+        y -= 15 * mm
+        return y
 
-    c.setFont('Helvetica-Bold', 16)
-    c.drawCentredString(page_w / 2, y, params.nom)
-    y -= 8 * mm
-    c.setFont('Helvetica-Bold', 14)
-    c.drawCentredString(page_w / 2, y, '\u00c9tat financier')
-    y -= 8 * mm
-    c.setFont('Helvetica', 10)
-    today_str = "Aujourd'hui"
-    debut_str = "Début"
-    dash = "\u2014"
-    periode = f'Période: {date_debut or debut_str} {dash} {date_fin or today_str}'
-    c.drawCentredString(page_w / 2, y, periode)
-    y -= 8 * mm
-    edited_str = "Édité le"
-    c.drawCentredString(page_w / 2, y, f'{edited_str} {timezone.localdate().strftime("%d/%m/%Y")}')
-    y -= 15 * mm
+    def _footer():
+        c.setFont('Helvetica', 8)
+        c.drawCentredString(page_w / 2, 15 * mm, f'{params.nom.upper()} | SIRET: {params.siret}')
+
+    def _new_page():
+        _footer()
+        c.showPage()
+        nonlocal y
+        y = _header(page_h - 20 * mm)
+
+    y = _header(page_h - 20 * mm)
 
     total_ht = Decimal('0.00')
     total_tva = Decimal('0.00')
@@ -645,54 +661,16 @@ def export_pdf(request):
     def _euro(val):
         return f'{val:.2f} \u20ac'.replace('.', ',')
 
-    c.setStrokeColor(colors.HexColor('#5e4828'))
-    c.setLineWidth(1.5)
-    c.rect(20 * mm, y - 4 * mm, page_w - 40 * mm, 8 * mm, stroke=1, fill=0)
-    c.setFont('Helvetica-Bold', 14)
-    c.drawCentredString(page_w / 2, y + 1 * mm, f'CHIFFRE D\'AFFAIRES (HT)')
-    c.drawRightString(page_w - 25 * mm, y + 1 * mm, _euro(total_ht))
-    y -= 16 * mm
-
-    c.setFont('Helvetica-Bold', 12)
-    c.drawString(20 * mm, y, f'R\u00e9sum\u00e9 - {total_factures} facture(s)')
+    # === Détail des factures ===
     y -= 10 * mm
-
-    c.setFont('Helvetica', 10)
-    items = [
-        ('Chiffre d\'affaires (HT)', _euro(total_ht)),
-        ('TVA ({0}%)'.format(params.tva_defaut), _euro(total_tva)),
-        ('Taxe s\u00e9jour ({0}%)'.format(params.taxe_sejour_pourcentage), _euro(total_taxe)),
-    ]
-    for label, val in items:
-        c.drawString(25 * mm, y, label)
-        c.drawRightString(page_w - 25 * mm, y, val)
-        y -= 7 * mm
-
-    c.setFont('Helvetica-Bold', 12)
-    c.setStrokeColor(colors.HexColor('#5e4828'))
-    c.line(25 * mm, y, page_w - 25 * mm, y)
-    y -= 3 * mm
-    c.drawString(25 * mm, y, 'Total TTC')
-    c.drawRightString(page_w - 25 * mm, y, _euro(total_ttc))
-
-    y -= 10 * mm
-    c.setFont('Helvetica-Bold', 12)
-    c.drawString(20 * mm, y, 'R\u00e9partition par moyen de paiement')
-    y -= 8 * mm
-    c.setFont('Helvetica', 10)
-    for mp, count in paiements.items():
-        c.drawString(25 * mm, y, f'{mp}: {count} facture(s)')
-        y -= 6 * mm
-
-    y -= 15 * mm
     c.setFont('Helvetica-Bold', 12)
     c.drawString(20 * mm, y, 'D\u00e9tail des factures')
     y -= 8 * mm
 
     # En-tête de tableau
-    c.setFont('Helvetica-Bold', 8)
+    c.setFont('Helvetica-Bold', 7)
     headers = ['N\u00b0', 'Client', 'Arriv\u00e9e', 'D\u00e9part', 'HT', 'Extras', 'TVA', 'Taxe', 'Total']
-    col_widths = [14, 38, 17, 17, 18, 16, 16, 16, 18]
+    col_widths = [20, 34, 20, 20, 16, 14, 14, 14, 18]
     x_start = 20 * mm
     for i, (h, w) in enumerate(zip(headers, col_widths)):
         c.drawString(x_start + sum(col_widths[:i]) * mm, y, h)
@@ -701,8 +679,7 @@ def export_pdf(request):
     c.setFont('Helvetica', 7)
     for f in qs:
         if y < 30 * mm:
-            c.showPage()
-            y = page_h - 20 * mm
+            _new_page()
             c.setFont('Helvetica', 7)
         data = [
             str(f.numero_reservation),
@@ -719,10 +696,32 @@ def export_pdf(request):
             c.drawString(x_start + sum(col_widths[:i]) * mm, y, d)
         y -= 5 * mm
 
-    # Pied de page
-    c.setFont('Helvetica', 8)
-    c.drawCentredString(page_w / 2, 15 * mm, f'{params.nom.upper()} | SIRET: {params.siret}')
+    # === Résumé ===
+    if y < 50 * mm:
+        _new_page()
+    y -= 6 * mm
 
+    c.setFont('Helvetica', 8)
+    items = [
+        ('Chiffre d\'affaires (HT)', _euro(total_ht)),
+        ('TVA ({0}%)'.format(params.tva_defaut), _euro(total_tva)),
+        ('Taxe s\u00e9jour ({0}%)'.format(params.taxe_sejour_pourcentage), _euro(total_taxe)),
+    ]
+    table_right = x_start + sum(col_widths) * mm
+    for label, val in items:
+        c.drawString(x_start, y, label)
+        c.drawRightString(table_right, y, val)
+        y -= 5 * mm
+
+    c.setFont('Helvetica-Bold', 9)
+    c.setStrokeColor(colors.HexColor('#5e4828'))
+    c.setLineWidth(0.5)
+    c.line(x_start, y, table_right, y)
+    y -= 3 * mm
+    c.drawString(x_start, y, 'Total TTC')
+    c.drawRightString(table_right, y, _euro(total_ttc))
+
+    _footer()
     c.save()
     pdf_bytes = buffer.getvalue()
     buffer.close()

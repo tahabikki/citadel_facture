@@ -20,20 +20,10 @@ def _date_fr(d):
     return d.strftime('%d/%m/%Y')
 
 
-def generer_pdf_facture(facture):
-    """Génère le PDF d'une facture et retourne les bytes."""
-    params = ParametresHotel.get_solo()
-    buffer = BytesIO()
-    c = canvas.Canvas(buffer, pagesize=A4)
-    page_w, page_h = A4
-
-    # === EN-TÊTE ===
-    y = page_h - 20 * mm
-
+def _draw_hotel_header(c, page_w, y, params):
     c.setFont('Helvetica-Bold', 16)
     c.drawCentredString(page_w / 2, y, params.nom)
     y -= 7 * mm
-
     c.setFont('Helvetica', 11)
     c.drawCentredString(page_w / 2, y, params.adresse)
     y -= 5 * mm
@@ -43,21 +33,24 @@ def generer_pdf_facture(facture):
     y -= 5 * mm
     c.drawCentredString(page_w / 2, y, params.email)
     y -= 12 * mm
+    return y
 
-    # === DATE D'ÉDITION (droite) ===
+
+def _draw_header(c, page_w, y, params, facture):
+    y = _draw_hotel_header(c, page_w, y, params)
+
     c.setFont('Helvetica', 10)
     c.drawRightString(page_w - 20 * mm, y, f'Éditée le {_date_fr(facture.date_edition)}')
     y -= 12 * mm
 
-    # === STATUT (gauche) + PAGE (droite) ===
     statut_label = dict(facture.STATUT_CHOICES).get(facture.statut, facture.statut).upper()
     c.setFont('Helvetica-Bold', 11)
     c.drawString(20 * mm, y, statut_label)
     c.setFont('Helvetica', 10)
-    c.drawRightString(page_w - 20 * mm, y, 'Page   1/1')
+    pn = c.getPageNumber()
+    c.drawRightString(page_w - 20 * mm, y, f'Page   {pn}')
     y -= 8 * mm
 
-    # === RÉSERVATION + CLIENT ===
     c.setFont('Helvetica', 10)
     c.drawString(20 * mm, y, f'Réservation n° {facture.numero_reservation}')
     c.setFont('Helvetica-Bold', 12)
@@ -67,7 +60,35 @@ def generer_pdf_facture(facture):
     c.drawString(20 * mm, y, f'Arrivée : {_date_fr(facture.date_arrivee)}')
     y -= 5 * mm
     c.drawString(20 * mm, y, f'Départ : {_date_fr(facture.date_depart)}')
+    y -= 5 * mm
+    mp = facture.get_moyen_paiement_display()
+    if mp:
+        c.setFont('Helvetica', 10)
+        c.drawString(20 * mm, y, f'Paiement : {mp}')
     y -= 10 * mm
+    return y
+
+
+def _draw_footer(c, page_w, params):
+    c.setFont('Helvetica', 9)
+    c.drawCentredString(page_w / 2, 15 * mm, f'{params.nom.upper()} Capital : {params.capital}')
+    c.drawCentredString(page_w / 2, 11 * mm, f'SIRET : {params.siret}')
+
+
+def _new_page(c, page_w, params, facture):
+    _draw_footer(c, page_w, params)
+    c.showPage()
+    return _draw_hotel_header(c, page_w, A4[1] - 20 * mm, params)
+
+
+def generer_pdf_facture(facture):
+    """Génère le PDF d'une facture et retourne les bytes."""
+    params = ParametresHotel.get_solo()
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer, pagesize=A4)
+    page_w, page_h = A4
+
+    y = _draw_header(c, page_w, page_h - 20 * mm, params, facture)
 
     # === TABLEAU SÉJOUR ===
     table_x = 20 * mm
@@ -154,10 +175,12 @@ def generer_pdf_facture(facture):
 
     ligne_total('Total séjour', val_chambre=facture.total_chambre, val_taxe=facture.total_taxe_sejour, bold=True)
 
-    y -= 2 * mm
+    y -= 6 * mm
 
     # === SECTION EXTRAS ===
     extras = list(facture.facture_extras.all())
+    if y < 35 * mm:
+        y = _new_page(c, page_w, params, facture)
     if extras:
         # Titre extras
         c.setFont('Helvetica-BoldOblique', 10)
@@ -189,6 +212,8 @@ def generer_pdf_facture(facture):
         y -= 3 * mm
 
     # === TOTAUX GÉNÉRAUX ===
+    if y < 60 * mm:
+        y = _new_page(c, page_w, params, facture)
     c.setFont('Helvetica-Bold', 10)
     c.drawString(20 * mm, y, 'Total HT séjour')
     c.drawRightString(page_w - 20 * mm, y, _euro(facture.montant_sejour_ht))
@@ -223,20 +248,7 @@ def generer_pdf_facture(facture):
     c.drawString(20 * mm, y, 'Reste dû')
     c.drawRightString(page_w - 20 * mm, y, _euro(facture.reste_du))
 
-    # === MOYEN DE PAIEMENT ===
-    if facture.moyen_paiement:
-        y -= 6 * mm
-        c.setFont('Helvetica', 10)
-        c.drawString(20 * mm, y, f'Paiement : {facture.get_moyen_paiement_display()}')
-
-    # === PIED DE PAGE ===
-    c.setFont('Helvetica', 9)
-    c.drawCentredString(
-        page_w / 2, 15 * mm,
-        f'{params.nom.upper()} Capital : {params.capital}'
-    )
-    c.drawCentredString(page_w / 2, 11 * mm, f'SIRET : {params.siret}')
-
+    _draw_footer(c, page_w, params)
     c.showPage()
     c.save()
 
