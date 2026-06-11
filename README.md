@@ -7,7 +7,7 @@ Application Django pour générer et gérer des factures d'hôtel avec base de d
 - ✅ Création, édition, suppression de factures
 - ✅ Liste des factures avec recherche et tri
 - ✅ Gestion clients (carnet d'adresses)
-- ✅ Calcul automatique : TVA 2% + taxe séjour
+- ✅ Calcul automatique : TVA 10% + taxe séjour 2%
 - ✅ Export PDF identique au modèle original (ReportLab)
 - ✅ Statuts : Provisoire / Définitive / Acquittée
 - ✅ Interface admin Django pour gestion avancée

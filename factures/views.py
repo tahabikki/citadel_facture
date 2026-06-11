@@ -68,24 +68,6 @@ def dashboard(request):
     taxe_sejour_total = (total_ht * taxe_rate).quantize(Decimal('0.01'))
     total_ttc = (total_ht + tva_total + taxe_sejour_total).quantize(Decimal('0.01'))
 
-    revenus_par_mois = (
-        Facture.objects
-        .annotate(mois=TruncMonth('date_arrivee'))
-        .values('mois')
-        .annotate(
-            total_ht_sum=Sum(
-                'prix_chambre_ht',
-                field="prix_chambre_ht * CAST((julianday(date_depart) - julianday(date_arrivee)) AS INTEGER)",
-                default=0
-            ),
-            count=Count('id')
-        )
-        .order_by('-mois')[:12]
-    )
-    for r in revenus_par_mois:
-        ht = r['total_ht_sum'] or Decimal('0.00')
-        r['total'] = (ht * (Decimal('1') + tva_rate + taxe_rate)).quantize(Decimal('0.01'))
-
     paiements_stats = (
         qs.filter(moyen_paiement__gt='')
         .values('moyen_paiement')
@@ -183,7 +165,6 @@ def dashboard(request):
         'total_ttc': total_ttc,
         'total_factures_payees': total_factures_payees,
         'total_paye': total_paye,
-        'revenus_par_mois': revenus_par_mois,
         'paiements_stats': paiements_stats,
         'stats_mensuelles': stats_mensuelles,
         'recent_factures': recent_factures,
@@ -576,6 +557,7 @@ def bilan(request):
     clients = Client.objects.all().order_by('nom', 'prenom')
 
     return render(request, 'factures/bilan.html', {
+        'params': params,
         'factures': qs,
         'total_ht': total_ht,
         'total_tva': total_tva,
@@ -599,6 +581,7 @@ def export_pdf(request):
     """Export PDF d'un état financier."""
     from reportlab.lib.pagesizes import A4
     from reportlab.lib.units import mm
+    from reportlab.lib import colors
     from reportlab.pdfgen import canvas
 
     params = ParametresHotel.get_solo()
@@ -662,21 +645,35 @@ def export_pdf(request):
     def _euro(val):
         return f'{val:.2f} \u20ac'.replace('.', ',')
 
+    c.setStrokeColor(colors.HexColor('#5e4828'))
+    c.setLineWidth(1.5)
+    c.rect(20 * mm, y - 4 * mm, page_w - 40 * mm, 8 * mm, stroke=1, fill=0)
+    c.setFont('Helvetica-Bold', 14)
+    c.drawCentredString(page_w / 2, y + 1 * mm, f'CHIFFRE D\'AFFAIRES (HT)')
+    c.drawRightString(page_w - 25 * mm, y + 1 * mm, _euro(total_ht))
+    y -= 16 * mm
+
     c.setFont('Helvetica-Bold', 12)
     c.drawString(20 * mm, y, f'R\u00e9sum\u00e9 - {total_factures} facture(s)')
     y -= 10 * mm
 
     c.setFont('Helvetica', 10)
     items = [
-        ('Total HT', _euro(total_ht)),
-        ('Total TVA', _euro(total_tva)),
-        ('Total Taxe s\u00e9jour', _euro(total_taxe)),
-        ('Total TTC', _euro(total_ttc)),
+        ('Chiffre d\'affaires (HT)', _euro(total_ht)),
+        ('TVA ({0}%)'.format(params.tva_defaut), _euro(total_tva)),
+        ('Taxe s\u00e9jour ({0}%)'.format(params.taxe_sejour_pourcentage), _euro(total_taxe)),
     ]
     for label, val in items:
         c.drawString(25 * mm, y, label)
         c.drawRightString(page_w - 25 * mm, y, val)
         y -= 7 * mm
+
+    c.setFont('Helvetica-Bold', 12)
+    c.setStrokeColor(colors.HexColor('#5e4828'))
+    c.line(25 * mm, y, page_w - 25 * mm, y)
+    y -= 3 * mm
+    c.drawString(25 * mm, y, 'Total TTC')
+    c.drawRightString(page_w - 25 * mm, y, _euro(total_ttc))
 
     y -= 10 * mm
     c.setFont('Helvetica-Bold', 12)
@@ -695,7 +692,7 @@ def export_pdf(request):
     # En-tête de tableau
     c.setFont('Helvetica-Bold', 8)
     headers = ['N\u00b0', 'Client', 'Arriv\u00e9e', 'D\u00e9part', 'HT', 'Extras', 'TVA', 'Taxe', 'Total']
-    col_widths = [13, 35, 18, 18, 20, 18, 18, 18, 22]
+    col_widths = [14, 38, 17, 17, 18, 16, 16, 16, 18]
     x_start = 20 * mm
     for i, (h, w) in enumerate(zip(headers, col_widths)):
         c.drawString(x_start + sum(col_widths[:i]) * mm, y, h)
@@ -709,7 +706,7 @@ def export_pdf(request):
             c.setFont('Helvetica', 7)
         data = [
             str(f.numero_reservation),
-            str(f.client)[:20],
+            str(f.client)[:16],
             f.date_arrivee.strftime('%d/%m/%Y'),
             f.date_depart.strftime('%d/%m/%Y'),
             _euro(f.montant_ht),

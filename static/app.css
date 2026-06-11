@@ -71,7 +71,7 @@
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
-  border-block: 1px solid #7c6969
+  border-block: 1px solid #7c6969;
 }
 
 .hc-nav-link {
@@ -278,7 +278,7 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
   margin-bottom: 22px;
-  margin-top: 22px,;
+  margin-top: 22px;
 }
 
 .hc-stat {
@@ -544,10 +544,6 @@
   color: #8a1f17;
 }
 
-.hc-danger-panel {
-  border-left: 5px solid #867050;
-}
-
 .hc-invoice-preview {
   max-width: 940px;
   min-height: 720px;
@@ -647,19 +643,19 @@
 }
 
 .hc-sidebar-overlay {
-  display: none;
   position: fixed;
   inset: 0;
   z-index: 50;
   background: rgba(0,0,0,0.4);
   backdrop-filter: blur(4px);
   opacity: 0;
-  transition: opacity 0.25s ease;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .hc-sidebar-overlay.is-visible {
-  display: block;
   opacity: 1;
+  visibility: visible;
 }
 
 .hc-sidebar-close {
@@ -682,10 +678,6 @@
 
 .hc-sidebar-close:hover {
   background: rgba(255,255,255,0.25);
-}
-
-.hc-brand {
-  position: relative;
 }
 
 /* === RESPONSIVE === */
@@ -1068,6 +1060,141 @@
   accent-color: #867050;
   width: 18px;
   height: 18px;
+}
+
+/* === PAGE ENTRANCE ANIMATION === */
+@keyframes hcFadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hc-panel,
+.hc-stat {
+  animation: hcFadeUp 0.45s ease both;
+}
+
+.hc-content > .hc-panel:nth-child(2) { animation-delay: 0.05s; }
+.hc-content > .hc-panel:nth-child(3) { animation-delay: 0.10s; }
+.hc-content > .hc-panel:nth-child(4) { animation-delay: 0.15s; }
+.hc-stats-grid > .hc-stat:nth-child(2) { animation-delay: 0.04s; }
+.hc-stats-grid > .hc-stat:nth-child(3) { animation-delay: 0.08s; }
+.hc-stats-grid > .hc-stat:nth-child(4) { animation-delay: 0.12s; }
+.hc-stats-grid > .hc-stat:nth-child(5) { animation-delay: 0.16s; }
+
+/* === FOCUS RING === */
+.hc-field input:focus,
+.hc-field select:focus,
+.hc-field textarea:focus,
+.hc-filterbar input:focus,
+.hc-filterbar select:focus {
+  outline: none;
+  border-color: #867050;
+  box-shadow: 0 0 0 3px rgba(134, 112, 80, 0.2);
+  background: #fff;
+}
+
+/* === SCROLLBAR === */
+.hc-sidebar::-webkit-scrollbar,
+.hc-table-wrap::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.hc-sidebar::-webkit-scrollbar-track,
+.hc-table-wrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+.hc-sidebar::-webkit-scrollbar-thumb,
+.hc-table-wrap::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.25);
+  border-radius: 999px;
+}
+.hc-table-wrap::-webkit-scrollbar-thumb {
+  background: rgba(31,41,51,0.15);
+}
+
+/* === DELETE CONFIRM CENTERED === */
+.hc-danger-panel {
+  max-width: 540px;
+  margin: 40px auto;
+  text-align: center;
+  border-left: 5px solid #867050;
+}
+.hc-danger-panel h2 {
+  margin-bottom: 8px;
+}
+.hc-danger-panel p {
+  color: #667788;
+  margin-bottom: 20px;
+}
+.hc-danger-panel .hc-form-actions {
+  justify-content: center;
+}
+
+/* === STAT CARD ENHANCEMENT === */
+.hc-stat {
+  position: relative;
+}
+
+/* === BUTTON HOVER ENHANCEMENT === */
+.hc-btn {
+  position: relative;
+  overflow: hidden;
+}
+.hc-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  background: rgba(255,255,255,0);
+  transition: background 0.2s;
+}
+.hc-btn:hover::after {
+  background: rgba(255,255,255,0.1);
+}
+
+/* === RESPONSIVE: BILAN COL TOGGLES === */
+@media (max-width: 768px) {
+  .hc-col-toggles {
+    flex-wrap: wrap;
+    gap: 3px;
+  }
+  .hc-tag-toggle {
+    font-size: 0.7rem;
+    padding: 3px 7px;
+  }
+}
+
+/* === RESPONSIVE: DASHBOARD GROUP TITLES === */
+@media (max-width: 600px) {
+  h3[style*="text-transform:uppercase"] {
+    font-size: 0.78rem !important;
+  }
+}
+
+/* === PRINT STYLES === */
+@media print {
+  .hc-sidebar,
+  .hc-topbar {
+    display: none !important;
+  }
+  .hc-admin {
+    grid-template-columns: 1fr;
+  }
+  .hc-content {
+    padding: 0;
+    max-width: 100%;
+  }
+  .hc-panel {
+    box-shadow: none;
+    border: 1px solid #ddd;
+    break-inside: avoid;
+  }
+  .hc-stat {
+    break-inside: avoid;
+  }
+  .hc-btn {
+    display: none !important;
+  }
 }
 
 /* === READ-ONLY INPUT === */

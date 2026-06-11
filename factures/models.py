@@ -20,7 +20,7 @@ class ParametresHotel(models.Model):
     capital = models.CharField(max_length=20, default='1000 €')
 
     tva_defaut = models.DecimalField(
-        max_digits=5, decimal_places=2, default=Decimal('2.00'),
+        max_digits=5, decimal_places=2, default=Decimal('10.00'),
         help_text='Taux de TVA par défaut (%)'
     )
     taxe_sejour_defaut = models.DecimalField(
@@ -28,7 +28,7 @@ class ParametresHotel(models.Model):
         help_text='Taxe de séjour par nuit/personne (€)'
     )
     taxe_sejour_pourcentage = models.DecimalField(
-        max_digits=5, decimal_places=2, default=Decimal('10.00'),
+        max_digits=5, decimal_places=2, default=Decimal('2.00'),
         help_text='Taxe de séjour en pourcentage du montant HT (%)'
     )
     prix_chambre_defaut = models.DecimalField(
@@ -155,12 +155,12 @@ class Facture(models.Model):
     )
     taux_tva = models.DecimalField(
         max_digits=5, decimal_places=2,
-        default=Decimal('2.00'),
+        default=Decimal('10.00'),
         help_text='Taux de TVA en %'
     )
     taux_taxe_sejour = models.DecimalField(
         max_digits=5, decimal_places=2,
-        default=Decimal('10.00'),
+        default=Decimal('2.00'),
         help_text='Taux de taxe de séjour en % du montant HT'
     )
     extras = models.DecimalField(

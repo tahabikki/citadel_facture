@@ -61,9 +61,9 @@
     <h2 style="font-size:1.1rem;font-weight:600;color:#334455">Les statistique — {{ total_factures }} facture(s)</h2>
   </div>
   <div class="hc-stats-grid" style="grid-template-columns:repeat(5,minmax(0,1fr))">
-    <article class="hc-stat" style="text-align:center">
-      <strong style="font-size:24px;display:block;margin-top:8px;text-align:center">{{ total_ht }} €</strong>
-      <p style="text-align:center">Total HT</p>
+    <article class="hc-stat" style="text-align:center;background:var(--primary,#5e4828f0);color:#fff">
+      <strong style="font-size:26px;display:block;margin-top:8px;text-align:center;color:#fff">{{ total_ht }} €</strong>
+      <p style="text-align:center;color:#e0d5c0;font-weight:600">Chiffre d'affaires (HT)</p>
     </article>
     <article class="hc-stat" style="text-align:center">
       <strong style="font-size:24px;display:block;margin-top:8px;text-align:center">{{ total_extras }} €</strong>
@@ -71,11 +71,11 @@
     </article>
     <article class="hc-stat" style="text-align:center">
       <strong style="font-size:24px;display:block;margin-top:8px;text-align:center">{{ total_tva }} €</strong>
-      <p style="text-align:center">TVA</p>
+      <p style="text-align:center">TVA ({{ params.tva_defaut }}%)</p>
     </article>
     <article class="hc-stat" style="text-align:center">
       <strong style="font-size:24px;display:block;margin-top:8px;text-align:center">{{ total_taxe }} €</strong>
-      <p style="text-align:center">Taxe séjour</p>
+      <p style="text-align:center">Taxe séjour ({{ params.taxe_sejour_pourcentage }}%)</p>
     </article>
     <article class="hc-stat" style="text-align:center">
       <strong style="font-size:24px;display:block;margin-top:8px;text-align:center">{{ total_ttc }} €</strong>
